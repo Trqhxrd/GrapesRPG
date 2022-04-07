@@ -1,0 +1,7 @@
+name: GrapesRPG
+author: Trqhxrd
+website: github.com/Trqhxrd
+
+main: me.trqhxrd.grapesrpg.Main
+version: ${project.version}
+api-version: 1.18
