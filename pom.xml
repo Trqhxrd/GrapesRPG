@@ -27,11 +27,11 @@
             <name>Spigot</name>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
-            <repository>
-                <id>codemc-repo</id>
-                <url>https://repo.codemc.org/repository/maven-public/</url>
-                <layout>default</layout>
-            </repository>
+        <repository>
+            <id>codemc-repo</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <layout>default</layout>
+        </repository>
     </repositories>
 
     <build>
@@ -115,6 +115,11 @@
                     </relocations>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-wrapper-plugin</artifactId>
+                <version>3.1.0</version>
+            </plugin>
         </plugins>
     </build>
 
@@ -165,6 +170,12 @@
             <groupId>de.tr7zw</groupId>
             <artifactId>nbt-injector</artifactId>
             <version>2.9.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>1.6.20</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
