@@ -1,8 +1,11 @@
 package me.trqhxrd.grapesrpg.impl.item.attribute
 
+import me.trqhxrd.grapesrpg.api.item.lore.LoreEntry
 import me.trqhxrd.grapesrpg.util.ModuleKey
 
-abstract class Attribute(override val moduleKey: ModuleKey) : me.trqhxrd.grapesrpg.api.item.attribute.Attribute {
+abstract class Attribute(
+    override val moduleKey: ModuleKey,
+) : me.trqhxrd.grapesrpg.api.item.attribute.Attribute {
 
     constructor(module: String, key: String) : this(ModuleKey(module, key))
 }

@@ -7,6 +7,7 @@ import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.api.item.attribute.Attribute
 import me.trqhxrd.grapesrpg.util.ModuleKey
 import org.bukkit.Material
+import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicReference
 import java.util.stream.Collectors
@@ -83,6 +84,19 @@ open class Item(
             .setObject("attributes", types)
         ref.set(nbt.item)
         this.attributes.forEach { a -> ref.set(a.write(ref.get())) }
+
+        val lore = mutableListOf<String>()
+
+        this.attributes.stream()
+            .map { a -> a.generateLoreEntry() }
+            .sorted()
+            .forEachOrdered { le -> le.append(lore) }
+
+        val meta = ref.get().itemMeta ?: return ref.get()
+        meta.lore = lore
+        ref.get().itemMeta = meta
+
+
         return ref.get()
     }
 
@@ -94,6 +108,12 @@ open class Item(
         item = nbt.item
 
         item = this.applyAttributes(item)
+
+        val meta = item.itemMeta
+        val lore = meta!!.lore
+        lore!!.add("§8${this.key.serialized}")
+        meta.lore = lore
+        item.itemMeta = meta
 
         return item
     }
