@@ -27,9 +27,11 @@ class Main : JavaPlugin {
         this.saveConfig()
 
         debugMode = this.config.getBoolean("debug", false)
-        if (debugMode) this.logger.info("Debug-Mode enabled.")
+        if (debugMode) this.logger.warning("Debug-Mode enabled.")
         if (debugMode) Bukkit.getPluginManager().registerEvents(PlayerJoinListener(), this)
 
-        this.logger.warning("Hello World!")
+        GrapesRPG.init(this)
+
+        this.logger.info("Hello World!")
     }
 }
