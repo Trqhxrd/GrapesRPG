@@ -9,11 +9,31 @@ import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
-class GrapesRPG {
+/**
+ * This class contains some utility methods used by the plugin.
+ * @author Trqhxrd
+ * @since 1.0
+ */
+class GrapesRPG private constructor() {
+
     companion object {
-        private lateinit var plugin: Plugin
+        /**
+         * This field contains the [Plugin], that owns the API.
+         * In most of the cases that's an instance of [Main].
+         */
+        lateinit var plugin: Plugin
+
+        /**
+         * This field contains an [AttributeRegistry].
+         * Every [me.trqhxrd.grapesrpg.api.item.attribute.Attribute] has to be registered here.
+         * If you want to create your own [me.trqhxrd.grapesrpg.api.item.attribute.Attribute],
+         * have a look at some predefined attributes.
+         */
         val attributes = AttributeRegistry()
 
+        /**
+         * This method needs to be called for the API to initialize.
+         */
         fun init(plugin: Plugin) {
             GrapesRPG.plugin = plugin
 
