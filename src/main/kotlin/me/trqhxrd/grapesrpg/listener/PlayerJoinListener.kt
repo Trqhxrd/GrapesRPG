@@ -1,5 +1,6 @@
 package me.trqhxrd.grapesrpg.listener
 
+import me.trqhxrd.grapesrpg.game.item.weapons.swords.StoneSword
 import me.trqhxrd.grapesrpg.game.item.weapons.swords.WoodenSword
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener

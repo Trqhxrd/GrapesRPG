@@ -8,7 +8,9 @@ interface Attribute {
 
     val moduleKey: ModuleKey
 
-    fun generateLoreEntry(): LoreEntry
+    fun generateLoreEntry(): LoreEntry?
+
+    fun apply(item: ItemStack): ItemStack
 
     fun read(item: ItemStack)
 

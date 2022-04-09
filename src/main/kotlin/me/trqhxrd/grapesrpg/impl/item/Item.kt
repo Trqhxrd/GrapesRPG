@@ -7,7 +7,6 @@ import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.api.item.attribute.Attribute
 import me.trqhxrd.grapesrpg.util.ModuleKey
 import org.bukkit.Material
-import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicReference
 import java.util.stream.Collectors
@@ -38,7 +37,11 @@ open class Item(
             val key = ModuleKey.deserialize(nbt.getString("id"))
             val item = Item(key, itemStack.type)
 
-            val attributeKeyStrings: MutableSet<String> = Gson().fromJson(nbt.getString("attributes"))
+            val attributeKeyStrings: MutableSet<String> =
+                Gson().fromJson(
+                    nbt.getString("attributes"),
+                    object : TypeToken<MutableSet<String>>() {}.type
+                )
             val attributeKeys: MutableSet<ModuleKey> = attributeKeyStrings.stream()
                 .map { k -> ModuleKey.deserialize(k) }
                 .collect(Collectors.toSet())
@@ -62,8 +65,6 @@ open class Item(
 
             return item
         }
-
-        private inline fun <reified T> Gson.fromJson(json: String) = fromJson<T>(json, object : TypeToken<T>() {}.type)
     }
 
     override fun <T : Attribute> getAttribute(clazz: KClass<out T>): T? {
@@ -88,14 +89,15 @@ open class Item(
         val lore = mutableListOf<String>()
 
         this.attributes.stream()
+            .peek { a -> ref.set(a.apply(ref.get())) }
             .map { a -> a.generateLoreEntry() }
+            .filter { a -> a != null }
             .sorted()
-            .forEachOrdered { le -> le.append(lore) }
+            .forEachOrdered { le -> le!!.append(lore) }
 
         val meta = ref.get().itemMeta ?: return ref.get()
         meta.lore = lore
         ref.get().itemMeta = meta
-
 
         return ref.get()
     }
