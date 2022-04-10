@@ -1,9 +1,6 @@
 package me.trqhxrd.grapesrpg
 
-import me.trqhxrd.grapesrpg.game.item.attribute.Damaging
-import me.trqhxrd.grapesrpg.game.item.attribute.Durability
-import me.trqhxrd.grapesrpg.game.item.attribute.Lore
-import me.trqhxrd.grapesrpg.game.item.attribute.Name
+import me.trqhxrd.grapesrpg.game.item.attribute.*
 import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
 import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
 import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
@@ -57,6 +54,8 @@ class GrapesRPG private constructor() {
             this.attributes.addAttribute(Durability())
             this.attributes.addAttribute(Lore())
             this.attributes.addAttribute(Name())
+            this.attributes.addAttribute(Todo())
+            this.attributes.addAttribute(Material())
 
             EntityDamageByEntityListener(this.plugin)
         }
