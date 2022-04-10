@@ -17,6 +17,19 @@
         <kotlin.compiler.jvmTarget>16</kotlin.compiler.jvmTarget>
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>trqhxrd</id>
+            <name>Trqhxrd's Release Repository</name>
+            <url>https://mvn.trqhxrd.de/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>trqhxrd</id>
+            <name>Trqhxrd's Snapshot Repository</name>
+            <url>https://mvn.trqhxrd.de/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>mavenCentral</id>
