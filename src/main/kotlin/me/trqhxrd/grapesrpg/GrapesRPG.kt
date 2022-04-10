@@ -13,7 +13,9 @@ import java.util.logging.Logger
  * @since 1.0
  */
 class GrapesRPG private constructor() {
-
+    /**
+     * Static methods and fields.
+     */
     companion object {
         /**
          * This field contains the [Plugin], that owns the API.
@@ -21,6 +23,9 @@ class GrapesRPG private constructor() {
          */
         lateinit var plugin: Plugin
 
+        /**
+         * This field contains the [Logger] of the plugin passed into [GrapesRPG.Companion.init]
+         */
         lateinit var logger: Logger
 
         /**
@@ -31,6 +36,9 @@ class GrapesRPG private constructor() {
          */
         val attributes = AttributeRegistry()
 
+        /**
+         * Whether debug mode is enabled. When debug mode is enabled the plugin does stuff like giving out items on join.
+         */
         var debugMode: Boolean = false
             set(value) {
                 if (field) return
@@ -60,6 +68,9 @@ class GrapesRPG private constructor() {
             EntityDamageByEntityListener(this.plugin)
         }
 
+        /**
+         * This method contains all things, that need to be executed when enabling debug mode.
+         */
         fun enableDebugMode() {
             this.logger.warning("Debug-mode enabled! Restart server to disable")
             PlayerJoinListener(this.plugin)
