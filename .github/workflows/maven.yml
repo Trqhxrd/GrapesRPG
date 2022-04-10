@@ -15,20 +15,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 16
-      uses: actions/setup-java@v3
-      with:
-        java-version: '16'
-        distribution: 'temurin'
-        cache: maven
-        server-id: trqhxrd # Value of the distributionManagement/repository/id field of the pom.xml
-        server-username: M2_USERNAME # env variable for username in deploy
-        server-password: M2_PASSWORD # env variable for token in deploy
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Deploy with Maven
-      run: mvn -B deploy --file pom.xml
-      env:
-        MAVEN_USERNAME: ${{ secrets.M2_USERNAME }}
-        MAVEN_CENTRAL_TOKEN: ${{ secrets.M2_PASSWORD }}
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+          server-id: trqhxrd # Value of the distributionManagement/repository/id field of the pom.xml
+          server-username: M2_USERNAME # env variable for username in deploy
+          server-password: M2_PASSWORD # env variable for token in deploy
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Deploy with Maven
+        run: mvn -B deploy --file pom.xml
+        env:
+          MAVEN_USERNAME: ${{ secrets.M2_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.M2_PASSWORD }}
