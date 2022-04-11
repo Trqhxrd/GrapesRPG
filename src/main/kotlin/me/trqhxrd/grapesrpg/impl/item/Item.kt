@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicReference
 import java.util.stream.Collectors
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 open class Item(
     override val key: ModuleKey,
