@@ -45,6 +45,16 @@
             <url>https://repo.codemc.org/repository/maven-public/</url>
             <layout>default</layout>
         </repository>
+        <repository>
+            <id>trqhxrd-releases</id>
+            <name>Trqhxrd's Release Repository</name>
+            <url>https://mvn.trqhxrd.de/releases</url>
+        </repository>
+        <repository>
+            <id>trqhxrd-snapshots</id>
+            <name>Trqhxrd's Snapshot Repository</name>
+            <url>https://mvn.trqhxrd.de/snapshots</url>
+        </repository>
     </repositories>
 
     <build>
@@ -214,6 +224,12 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-reflect</artifactId>
             <version>1.6.20</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.trqhxrd</groupId>
+            <artifactId>menus</artifactId>
+            <version>1.2.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

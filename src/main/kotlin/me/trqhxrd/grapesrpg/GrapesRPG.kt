@@ -4,7 +4,9 @@ import me.trqhxrd.grapesrpg.game.item.attribute.*
 import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
 import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
 import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
+import me.trqhxrd.menus.Menus
 import org.bukkit.plugin.Plugin
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Logger
 
 /**
@@ -52,6 +54,8 @@ class GrapesRPG private constructor() {
         fun init(plugin: Plugin) {
             this.plugin = plugin
             this.logger = this.plugin.logger
+
+            Menus.enable(plugin as JavaPlugin)
 
             this.plugin.config.options().copyDefaults(true)
             this.plugin.saveConfig()
