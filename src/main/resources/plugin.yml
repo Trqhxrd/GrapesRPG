@@ -5,3 +5,15 @@ website: github.com/Trqhxrd
 main: me.trqhxrd.grapesrpg.Main
 version: ${project.version}
 api-version: 1.18
+
+softdepend:
+  - CustomCrafting
+
+libraries:
+  - org.eclipse.aether:aether-api:1.1.0
+  - org.eclipse.aether:aether-spi:1.1.0
+  - org.eclipse.aether:aether-connector-basic:1.1.0
+  - org.eclipse.aether:aether-transport-file:1.1.0
+  - org.eclipse.aether:aether-transport-http:1.1.0
+  - org.apache.maven:maven-aether-provider:3.3.9
+  - org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3
