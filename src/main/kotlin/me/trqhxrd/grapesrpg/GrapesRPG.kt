@@ -76,18 +76,15 @@ class GrapesRPG private constructor() {
             this.debugMode = this.plugin.config.getBoolean("debug")
 
             this.downloadDependencies()
-            this.setupBStats()
-
-            this.attributes.addAttribute(Damaging())
-            this.attributes.addAttribute(Durability())
-            this.attributes.addAttribute(Lore())
-            this.attributes.addAttribute(Name())
-            this.attributes.addAttribute(Todo())
-            this.attributes.addAttribute(Material())
+            this.setupMetrics()
+            this.setupAttributes()
 
             EntityDamageByEntityListener(this.plugin)
         }
 
+        /**
+         * This function downloads and installs dependencies listed in the "dependencies" section in the config.
+         */
         private fun downloadDependencies() {
             this.logger.info("Downloading dependencies... This may take some time.")
             this.logger.info("Setting up repository structure.")
@@ -128,6 +125,16 @@ class GrapesRPG private constructor() {
             this.logger.info("Collecting dependencies...")
             for (dep in dependencies) {
                 val artifact = "${dep.artifact.groupId}:${dep.artifact.artifactId}:${dep.artifact.version}"
+
+                val jar = File(
+                    this.plugin.dataFolder.parentFile,
+                    "${dep.artifact.artifactId}-${dep.artifact.version}.jar"
+                )
+                if (jar.exists()) {
+                    this.logger.info("Artifact $artifact already exists. Skipping.")
+                    continue
+                }
+
                 this.logger.info("Collecting $artifact.")
                 val collectRequest = CollectRequest(dep, repositories)
                 val node = repositorySystem.collectDependencies(session, collectRequest).root
@@ -151,20 +158,30 @@ class GrapesRPG private constructor() {
 
                     val pl = this.plugin.server.pluginManager.loadPlugin(target)!!
                     this.plugin.server.pluginManager.enablePlugin(pl)
-                }else this.logger.info("Artifact $artifact is already installed on the server.")
+                } else this.logger.info("Artifact $artifact is already installed on the server.")
             }
+            this.logger.info("Collected all dependencies.")
         }
 
         /**
          * This method contains all things, that need to be executed when enabling debug mode.
          */
-        fun enableDebugMode() {
+        private fun enableDebugMode() {
             this.logger.warning("Debug-mode enabled! Restart server to disable")
             PlayerJoinListener(this.plugin)
         }
 
-        fun setupBStats() {
+        private fun setupMetrics() {
             val metrics = Metrics(this.plugin, 14961)
+        }
+
+        private fun setupAttributes() {
+            this.attributes.addAttribute(Damaging())
+            this.attributes.addAttribute(Durability())
+            this.attributes.addAttribute(Lore())
+            this.attributes.addAttribute(Name())
+            this.attributes.addAttribute(Todo())
+            this.attributes.addAttribute(Material())
         }
     }
 }

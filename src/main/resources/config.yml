@@ -11,10 +11,5 @@ dependencies:
     1:
       groupId: com.wolfyscript.wolfyutils.spigot
       artifactId: wolfyutils-spigot
-      version: 4.16.0.0
-      scope: compile
-    2:
-      groupId: com.wolfyscript.customcrafting
-      artifactId: customcrafting-spigot
-      version: 3.16.3.3
+      version: 4.16.1.0
       scope: compile
