@@ -136,7 +136,7 @@
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
-                <version>1.6.20</version>
+                <version>1.6.21</version>
                 <executions>
                     <execution>
                         <id>generate-documentation</id>
@@ -152,7 +152,7 @@
                         <plugin>
                             <groupId>org.jetbrains.dokka</groupId>
                             <artifactId>kotlin-as-java-plugin</artifactId>
-                            <version>1.6.20</version>
+                            <version>1.6.21</version>
                         </plugin>
                     </dokkaPlugins>
                 </configuration>
