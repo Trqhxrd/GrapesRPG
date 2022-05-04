@@ -16,9 +16,8 @@ class Durability(var current: Int, var max: Int, var unbreakable: Boolean) :
         return if (this.unbreakable) LoreEntry("§f§lUNBREAKABLE")
         else if (this.current <= 0) LoreEntry("§4§lBROKEN")
         else {
-            var color = 'f'
             val percentage = this.current / this.max.toDouble()
-            color = when {
+            val color = when {
                 percentage <= 0 -> '4'
                 percentage <= 0.05 -> 'c'
                 percentage <= 0.1 -> 'e'
