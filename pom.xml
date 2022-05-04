@@ -78,6 +78,9 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
+                <configuration>
+                    <jvmTarget>16</jvmTarget>
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -143,7 +146,7 @@
                         </relocation>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>me.trqhxrd.grapesrpg.bstats</shadedPattern>
+                            <shadedPattern>me.trqhxrd.grapesrpg.util.metrics</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -157,16 +160,6 @@
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
                 <version>1.6.10</version>
-                <executions>
-                    <execution>
-                        <id>generate-documentation</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>dokka</goal>
-                            <goal>javadocJar</goal>
-                        </goals>
-                    </execution>
-                </executions>
                 <configuration>
                     <reportUndocumented>true</reportUndocumented>
                     <dokkaPlugins>
@@ -222,6 +215,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>me.trqhxrd</groupId>
+            <artifactId>menus</artifactId>
+            <version>1.2.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>
             <version>1.6.20</version>
@@ -255,6 +254,12 @@
             <groupId>com.wolfyscript.wolfyutils.spigot</groupId>
             <artifactId>wolfyutils-spigot</artifactId>
             <version>4.16.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.wolfyscript.customcrafting</groupId>
+            <artifactId>customcrafting-spigot</artifactId>
+            <version>3.16.3.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -297,6 +302,12 @@
             <groupId>org.eclipse.aether</groupId>
             <artifactId>aether-transport-http</artifactId>
             <version>1.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

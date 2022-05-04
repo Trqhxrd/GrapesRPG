@@ -5,30 +5,46 @@ import com.google.gson.reflect.TypeToken
 import de.tr7zw.changeme.nbtapi.NBTItem
 import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.api.item.attribute.Attribute
+import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.util.ModuleKey
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicReference
 import java.util.stream.Collectors
 import kotlin.reflect.KClass
+import me.trqhxrd.grapesrpg.api.item.Item as ItemAPI
 
 open class Item(
     override val key: ModuleKey,
     override val type: Material,
-    override val attributes: MutableSet<Attribute> = HashSet()
-) : me.trqhxrd.grapesrpg.api.item.Item {
+    override val attributes: MutableSet<Attribute> = HashSet(),
+    override var recipe: Recipe? = null
+) : ItemAPI {
 
-    constructor(key: String, type: Material, attributes: MutableSet<Attribute> = HashSet()) : this(
+    constructor(
+        key: String,
+        type: Material,
+        attributes: MutableSet<Attribute> = HashSet(),
+        recipe: Recipe? = null
+    ) : this(
         "grapes",
         key,
         type,
-        attributes
+        attributes,
+        recipe
     )
 
-    constructor(module: String, key: String, type: Material, attributes: MutableSet<Attribute> = HashSet()) : this(
+    constructor(
+        module: String,
+        key: String,
+        type: Material,
+        attributes: MutableSet<Attribute> = HashSet(),
+        recipe: Recipe? = null
+    ) : this(
         ModuleKey(module, key),
         type,
-        attributes
+        attributes,
+        recipe
     )
 
     companion object {
@@ -112,13 +128,13 @@ open class Item(
         item = this.applyAttributes(item)
 
         val meta = item.itemMeta
-        val lore = meta!!.lore
-        lore!!.add("§8${this.key.serialized}")
+        val lore = meta!!.lore ?: mutableListOf()
+        lore.add("§8${this.key.serialized}")
         meta.lore = lore
         item.itemMeta = meta
 
         return item
     }
 
-    override fun equalType(item: me.trqhxrd.grapesrpg.api.item.Item) = this.key == item.key
+    override fun equalType(item: ItemAPI) = this.key == item.key
 }

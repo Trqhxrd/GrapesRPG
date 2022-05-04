@@ -1,5 +1,6 @@
 package me.trqhxrd.grapesrpg.listener
 
+import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.game.item.attribute.Damaging
 import me.trqhxrd.grapesrpg.impl.item.Item
 import me.trqhxrd.grapesrpg.util.AbstractListener
@@ -7,9 +8,8 @@ import org.bukkit.Material
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.plugin.Plugin
 
-class EntityDamageByEntityListener(plugin: Plugin) : AbstractListener(plugin) {
+class EntityDamageByEntityListener : AbstractListener(GrapesRPG.plugin) {
 
     @EventHandler
     fun onEntityDamageByEntity(event: EntityDamageByEntityEvent) {

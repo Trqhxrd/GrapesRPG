@@ -1,6 +1,7 @@
 package me.trqhxrd.grapesrpg.api.item
 
 import me.trqhxrd.grapesrpg.api.item.attribute.Attribute
+import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.util.ModuleKey
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -13,6 +14,8 @@ interface Item {
     val type: Material
 
     val attributes: Set<Attribute>
+
+    var recipe: Recipe?
 
     fun <T : Attribute> getAttribute(clazz: KClass<out T>): T?
 
