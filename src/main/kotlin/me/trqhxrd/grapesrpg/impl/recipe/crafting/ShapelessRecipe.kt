@@ -11,7 +11,7 @@ import me.trqhxrd.grapesrpg.api.recipe.crafting.ShapelessRecipe as ShapelessReci
 
 open class ShapelessRecipe(
     override val result: Item,
-    override val ingredients: MutableSet<Ingredient> = mutableSetOf()
+    override val ingredients: MutableList<Ingredient> = mutableListOf()
 ) : ShapelessRecipeAPI {
 
     override fun check(matrix: Array<ItemStack?>): Boolean {
@@ -27,6 +27,7 @@ open class ShapelessRecipe(
                 if (i.check(item)) {
                     matrixCopy.remove(item)
                     ingredientsCopy.remove(i)
+                    break
                 }
             }
         }

@@ -7,7 +7,7 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 interface ShapelessRecipe : CraftingRecipe {
-    val ingredients: MutableSet<Ingredient>
+    val ingredients: MutableList<Ingredient>
     fun addIngredient(ingredient: Ingredient)
     fun addIngredient(ingredient: Material)
     fun addIngredient(ingredient: ItemStack)
