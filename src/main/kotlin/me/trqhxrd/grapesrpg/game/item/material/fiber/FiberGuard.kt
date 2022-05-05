@@ -1,8 +1,6 @@
-package me.trqhxrd.grapesrpg.game.item.material.guard
+package me.trqhxrd.grapesrpg.game.item.material.fiber
 
 import me.trqhxrd.grapesrpg.game.item.attribute.Name
-import me.trqhxrd.grapesrpg.game.item.material.PlantFiber
-import me.trqhxrd.grapesrpg.game.item.material.handle.FiberHandle
 import me.trqhxrd.grapesrpg.impl.item.Item
 import me.trqhxrd.grapesrpg.impl.recipe.crafting.ShapedRecipe
 import me.trqhxrd.grapesrpg.impl.recipe.ingredient.ItemIngredient

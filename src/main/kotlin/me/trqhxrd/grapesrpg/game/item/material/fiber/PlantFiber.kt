@@ -1,8 +1,7 @@
-package me.trqhxrd.grapesrpg.game.item.material
+package me.trqhxrd.grapesrpg.game.item.material.fiber
 
 import me.trqhxrd.grapesrpg.game.item.attribute.Name
 import me.trqhxrd.grapesrpg.impl.item.Item
-import me.trqhxrd.grapesrpg.impl.recipe.crafting.ShapedRecipe
 import me.trqhxrd.grapesrpg.impl.recipe.crafting.ShapelessRecipe
 import me.trqhxrd.grapesrpg.impl.recipe.ingredient.MaterialIngredient
 import org.bukkit.Material

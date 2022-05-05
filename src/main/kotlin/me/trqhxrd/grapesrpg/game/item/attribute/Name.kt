@@ -1,6 +1,7 @@
 package me.trqhxrd.grapesrpg.game.item.attribute
 
 import de.tr7zw.changeme.nbtapi.NBTItem
+import me.trqhxrd.grapesrpg.impl.item.Item
 import me.trqhxrd.grapesrpg.impl.item.attribute.Attribute
 import org.bukkit.inventory.ItemStack
 
@@ -20,7 +21,18 @@ class Name(var name: String) : Attribute("grapes", "name") {
 
     override fun apply(item: ItemStack): ItemStack {
         val meta = item.itemMeta
-        meta!!.setDisplayName(this.name)
+        var finalName = this.name
+
+        if (Item.isGrapesItem(item)) {
+            val i = Item.fromItemStack(item)
+            val rarity = i.getAttribute(Rarity::class)
+            if (rarity != null)
+                //On purpose not reversed :D
+                for (c in rarity.value.color)
+                    finalName = "${c}$finalName"
+        }
+
+        meta!!.setDisplayName(finalName)
         item.itemMeta = meta
         return item
     }

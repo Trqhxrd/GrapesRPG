@@ -1,11 +1,11 @@
-package me.trqhxrd.grapesrpg.game.item.weapon.sword
+package me.trqhxrd.grapesrpg.game.item.weapon.sword.wooden
 
 import me.trqhxrd.grapesrpg.game.item.attribute.Damaging
 import me.trqhxrd.grapesrpg.game.item.attribute.Durability
 import me.trqhxrd.grapesrpg.game.item.attribute.Name
-import me.trqhxrd.grapesrpg.game.item.material.blade.WoodenBlade
-import me.trqhxrd.grapesrpg.game.item.material.guard.FiberGuard
-import me.trqhxrd.grapesrpg.game.item.material.handle.FiberHandle
+import me.trqhxrd.grapesrpg.game.item.attribute.Rarity
+import me.trqhxrd.grapesrpg.game.item.material.fiber.FiberGuard
+import me.trqhxrd.grapesrpg.game.item.material.fiber.FiberHandle
 import me.trqhxrd.grapesrpg.impl.item.Item
 import me.trqhxrd.grapesrpg.impl.recipe.crafting.ShapedRecipe
 import me.trqhxrd.grapesrpg.impl.recipe.ingredient.ItemIngredient
@@ -17,7 +17,8 @@ class WoodenSword : Item(
     mutableSetOf(
         Damaging(4),
         Durability(64),
-        Name("§aWooden Sword")
+        Name("Wooden Sword"),
+        Rarity(Rarity.Value.COMMON)
     )
 ) {
     init {
