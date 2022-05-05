@@ -159,7 +159,7 @@
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
-                <version>1.6.10</version>
+                <version>1.6.21</version>
                 <configuration>
                     <reportUndocumented>true</reportUndocumented>
                     <dokkaPlugins>
