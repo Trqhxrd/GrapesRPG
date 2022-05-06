@@ -27,7 +27,7 @@ class Name(var name: String) : Attribute("grapes", "name") {
             val i = Item.fromItemStack(item)
             val rarity = i.getAttribute(Rarity::class)
             if (rarity != null)
-                //On purpose not reversed :D
+                // On purpose not reversed :D
                 for (c in rarity.value.color)
                     finalName = "${c}$finalName"
         }
