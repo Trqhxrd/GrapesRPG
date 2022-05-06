@@ -1,12 +1,11 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
 name: Java CI with Maven
 
 on:
   push:
     branches: [ main, dev ]
   pull_request:
+    types:
+      - closed
     branches: [ main, dev ]
 
 jobs:
@@ -22,9 +21,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-          server-id: trqhxrd # Value of the distributionManagement/repository/id field of the pom.xml
-          server-username: M2_USERNAME # env variable for username in deploy
-          server-password: M2_PASSWORD # env variable for token in deploy
+          server-id: trqhxrd
+          server-username: M2_USERNAME 
+          server-password: M2_PASSWORD
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Deploy with Maven
