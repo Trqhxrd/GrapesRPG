@@ -52,7 +52,12 @@ class CraftingGUI() : AbstractMenu(SIZE, TITLE) {
     }
 
     override fun onDrag(e: InventoryDragEvent) {
-        e.isCancelled = e.rawSlots.contains(OUTPUT_SLOT)
+        val view = e.view
+        val items = e.newItems.map { p -> p.value }
+
+        for ((index, slot) in e.rawSlots.withIndex()) view.setItem(slot, items[index])
+        view.cursor = e.cursor
+
         this.handleRecipe(e.view)
     }
 
@@ -108,20 +113,23 @@ class CraftingGUI() : AbstractMenu(SIZE, TITLE) {
         val cursor = view.cursor ?: air()
         if (cursor.type == AIR) return
 
-        for ((index, i) in view.bottomInventory.withIndex()) {
-            if (cursor.amount >= cursor.maxStackSize) break
+        val invPriority =
+            if (rawSlot >= SIZE) arrayOf(view.bottomInventory, view.topInventory)
+            else arrayOf(view.topInventory, view.bottomInventory)
 
-            val item = i ?: air()
-            if (item.isSimilar(cursor)) {
-                if (item.amount + cursor.amount <= cursor.maxStackSize) {
-                    cursor.amount += item.amount
-                    view.bottomInventory.setItem(index, air())
-                } else {
-                    val diff = cursor.maxStackSize - cursor.amount
-                    cursor.amount = cursor.maxStackSize
-                    if (diff < item.amount) item.amount = diff
-                    else view.bottomInventory.setItem(index, air())
-                    break
+        for (inv in invPriority) {
+            val slots = if (inv == view.topInventory) INPUT_SLOTS.iterator() else (0 until SIZE).iterator()
+            for (i in slots) {
+                val slot = inv.getItem(i) ?: air()
+                if (cursor.isSimilar(slot)) {
+                    if (cursor.amount + slot.amount <= cursor.maxStackSize) {
+                        cursor.amount += slot.amount
+                        inv.setItem(i, air())
+                    } else {
+                        val diff = cursor.maxStackSize - cursor.amount
+                        cursor.amount = cursor.maxStackSize
+                        slot.amount -= diff
+                    }
                 }
             }
         }

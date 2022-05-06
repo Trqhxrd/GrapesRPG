@@ -9,14 +9,14 @@ import me.trqhxrd.grapesrpg.impl.item.Item as ItemImpl
 
 class ItemIngredient(vararg val items: ModuleKey, val amount: Int = 1) : Ingredient {
 
-    constructor(vararg items: Item) : this(*items.map { i -> i.key }.toTypedArray())
+    constructor(vararg items: Item, amount: Int = 1) : this(*items.map { i -> i.key }.toTypedArray(), amount = amount)
 
     init {
         if (items.isEmpty()) throw NullPointerException("A ${this::class.simpleName} requires at least one item!")
     }
 
     override fun check(item: ItemStack) =
-        this.items.contains(ItemImpl.fromItemStack(item).key) && item.amount >= this.amount
+        ItemImpl.isGrapesItem(item) && this.items.contains(ItemImpl.fromItemStack(item).key) && item.amount >= this.amount
 
     override fun reduce(item: ItemStack): ItemStack {
         return if (item.amount > amount) {

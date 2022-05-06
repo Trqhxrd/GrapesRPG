@@ -48,6 +48,11 @@ open class Item(
     )
 
     companion object {
+        fun isGrapesItem(itemStack: ItemStack): Boolean {
+            val nbt = NBTItem(itemStack).addCompound("grapes")
+            return ModuleKey.deserializeOrNull(nbt.getString("id")) != null
+        }
+
         fun fromItemStack(itemStack: ItemStack): Item {
             val nbt = NBTItem(itemStack).addCompound("grapes")
             val key = ModuleKey.deserialize(nbt.getString("id"))

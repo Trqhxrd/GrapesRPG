@@ -201,6 +201,7 @@ object GrapesRPG {
         this.attributes.addAttribute(Name())
         this.attributes.addAttribute(Todo())
         this.attributes.addAttribute(Material())
+        this.attributes.addAttribute(Rarity())
     }
 
     private fun setupListeners() {
