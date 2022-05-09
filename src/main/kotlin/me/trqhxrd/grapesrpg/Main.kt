@@ -1,7 +1,5 @@
 package me.trqhxrd.grapesrpg
 
-import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
-import org.bukkit.Bukkit
 import org.bukkit.plugin.PluginDescriptionFile
 import org.bukkit.plugin.java.JavaPlugin
 import org.bukkit.plugin.java.JavaPluginLoader
@@ -27,4 +25,6 @@ class Main : JavaPlugin {
 
         this.logger.info("Hello World!")
     }
+
+    override fun onDisable() = GrapesRPG.disable()
 }

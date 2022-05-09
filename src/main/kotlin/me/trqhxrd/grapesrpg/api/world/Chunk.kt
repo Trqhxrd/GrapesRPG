@@ -1,21 +1,26 @@
 package me.trqhxrd.grapesrpg.api.world
 
+import me.trqhxrd.grapesrpg.util.coords.ChunkID
+import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import org.bukkit.Location
+import org.bukkit.Chunk as BukkitChunk
 
 interface Chunk {
-    val id: Pair<Int, Int>
+    val id: ChunkID
     val world: World
-    val location: Location
-    val blocks: MutableMap<Triple<Int, Int, Int>, Block>
+    val bukkitChunk: BukkitChunk
+    val blocks: MutableMap<Coordinate, Block>
 
-    fun getBlock(id: Triple<Int, Int, Int>): Block
+    fun getBlock(id: Coordinate): Block
     fun getBlock(loc: Location): Block
 
-    fun addBlock(id: Triple<Int, Int, Int>): Block
+    fun addBlock(id: Coordinate): Block
     fun addBlock(loc: Location): Block
 
-    fun exists(id: Triple<Int, Int, Int>): Boolean
+    fun exists(id: Coordinate): Boolean
     fun exists(loc: Location): Boolean
+
+    fun corner(): Coordinate
 
     fun save()
     fun load()

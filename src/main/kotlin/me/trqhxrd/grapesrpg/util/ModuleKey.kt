@@ -7,6 +7,7 @@ package me.trqhxrd.grapesrpg.util
  * @param module The name of a module.
  * @param key    The name of the key itself.
  */
+@kotlinx.serialization.Serializable
 data class ModuleKey(val module: String, val key: String) {
     /**
      * Static methods and fields.
@@ -31,5 +32,5 @@ data class ModuleKey(val module: String, val key: String) {
     /**
      * This field contains the key serialized in the format module:key.
      */
-    val serialized: String = "$module:$key"
+   // val serialized: String = "$module:$key"
 }

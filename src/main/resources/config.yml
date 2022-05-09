@@ -13,3 +13,5 @@ dependencies:
       artifactId: wolfyutils-spigot
       version: 4.16.1.0
       scope: compile
+jdbc:
+  block_max_length: 1024

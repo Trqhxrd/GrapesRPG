@@ -5,9 +5,13 @@ import me.trqhxrd.grapesrpg.api.item.Item
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.game.item.attribute.*
 import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
+import me.trqhxrd.grapesrpg.impl.world.BlockData
+import me.trqhxrd.grapesrpg.impl.world.World
 import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
 import me.trqhxrd.grapesrpg.listener.PlayerInteractListener
 import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
+import me.trqhxrd.grapesrpg.listener.world.ChunkLoadListener
+import me.trqhxrd.grapesrpg.listener.world.ChunkUnloadListener
 import me.trqhxrd.menus.Menus
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils
 import org.bstats.bukkit.Metrics
@@ -86,6 +90,12 @@ object GrapesRPG {
         this.setupAttributes()
         this.registerItems("me.trqhxrd.grapesrpg.game")
         this.setupListeners()
+
+        BlockData.Void()
+    }
+
+    fun disable() {
+        World.worlds.forEach { it.save() }
     }
 
     /**
@@ -207,5 +217,7 @@ object GrapesRPG {
     private fun setupListeners() {
         EntityDamageByEntityListener()
         PlayerInteractListener()
+        ChunkLoadListener()
+        ChunkUnloadListener()
     }
 }
