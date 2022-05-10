@@ -1,5 +1,7 @@
 package me.trqhxrd.grapesrpg.impl.world
 
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import me.trqhxrd.grapesrpg.impl.world.jdbc.ChunkTable
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
@@ -49,7 +51,7 @@ class Chunk(
         transaction {
             chunk.selectAll()
                 .map { it[chunk.id] }
-                .map { Block(Coordinate(it.value), this@Chunk) }
+                .map { Block(Json.decodeFromString(it.value), this@Chunk) }
                 .forEach { it.load() }
         }
     }

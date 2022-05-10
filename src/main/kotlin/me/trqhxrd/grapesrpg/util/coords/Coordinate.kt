@@ -1,16 +1,18 @@
 package me.trqhxrd.grapesrpg.util.coords
 
-import com.google.gson.Gson
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.bukkit.Location
 import org.bukkit.World
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
 
+@Serializable
 data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparable<Coordinate> {
 
     constructor() : this(0, 0, 0)
     constructor(loc: Location) : this(loc.blockX, loc.blockY, loc.blockZ)
     constructor(coords: Coordinate) : this(coords.x, coords.y, coords.z)
-    constructor(json: String) : this(Gson().fromJson(json, Coordinate::class.java))
 
     companion object {
         val DEFAULT = Coordinate(0, 0, 0)
@@ -27,9 +29,7 @@ data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparabl
 
     fun block(world: World) = this.toLocation(world).block
 
-    fun toJson(): String {
-        return Gson().toJson(this)
-    }
+    fun toJson() = Json.encodeToString(this)
 
     override fun clone() = Coordinate(this)
 

@@ -39,7 +39,7 @@ class Block(
 
             chunk.insert {
                 it[id] = this@Block.location.toJson()
-                it[dataType] = this@Block.data.id.serialized
+                it[dataType] = this@Block.data.id.serialized()
                 it[data] = Gson().toJson(this@Block.data.save())
             }
         }

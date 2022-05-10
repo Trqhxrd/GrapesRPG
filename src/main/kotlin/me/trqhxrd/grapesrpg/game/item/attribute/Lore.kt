@@ -1,8 +1,8 @@
 package me.trqhxrd.grapesrpg.game.item.attribute
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import de.tr7zw.changeme.nbtapi.NBTItem
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import me.trqhxrd.grapesrpg.impl.item.attribute.Attribute
 import me.trqhxrd.grapesrpg.impl.item.lore.LoreEntry
 import org.bukkit.inventory.ItemStack
@@ -16,7 +16,7 @@ class Lore(vararg var lines: String = arrayOf()) : Attribute("grapes", "lore") {
     override fun read(item: ItemStack) {
         val nbt = NBTItem(item)
         val linesSerialized = nbt.getCompound("grapes").getString("lore")
-        this.lines = Gson().fromJson(linesSerialized, object : TypeToken<List<String>>() {}.type)
+        this.lines = Json.decodeFromString(linesSerialized)
     }
 
     override fun write(item: ItemStack): ItemStack {
