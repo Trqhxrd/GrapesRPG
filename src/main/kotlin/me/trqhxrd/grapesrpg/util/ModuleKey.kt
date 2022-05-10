@@ -1,5 +1,7 @@
 package me.trqhxrd.grapesrpg.util
 
+import kotlinx.serialization.Serializable
+
 /**
  * A [ModuleKey] is used by most stuff in the GrapesRPG.
  * It contains the name of a module and a custom name.
@@ -7,7 +9,7 @@ package me.trqhxrd.grapesrpg.util
  * @param module The name of a module.
  * @param key    The name of the key itself.
  */
-@kotlinx.serialization.Serializable
+@Serializable
 data class ModuleKey(val module: String, val key: String) {
     /**
      * Static methods and fields.
@@ -32,5 +34,6 @@ data class ModuleKey(val module: String, val key: String) {
     /**
      * This field contains the key serialized in the format module:key.
      */
-   // val serialized: String = "$module:$key"
+    // val serialized: String = "$module:$key"
+    fun serialized() = "$module:$key"
 }

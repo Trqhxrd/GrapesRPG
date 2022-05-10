@@ -310,7 +310,6 @@ class CraftingGUI() : AbstractMenu(SIZE, TITLE) {
     private fun splitStack(item: ItemStack, stacks: Int): Array<ItemStack> {
         var left = item.amount % stacks
         val perStack = (item.amount - left) / stacks
-        val amount = arrayOfNulls<Int>(stacks)
         val items = arrayOfNulls<ItemStack>(stacks)
 
         items.fill(item)
