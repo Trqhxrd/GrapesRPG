@@ -16,7 +16,10 @@ class CraftingTable : BlockData<CraftingTable>(KEY, Material.CRAFTING_TABLE) {
     }
 
     override fun onClick(event: PlayerInteractEvent) {
-        if (event.action == Action.RIGHT_CLICK_BLOCK) CraftingGUI(event.player)
+        if (event.action == Action.RIGHT_CLICK_BLOCK) {
+            CraftingGUI(event.player)
+            event.isCancelled = true
+        }
     }
 
     override fun onBreak(event: BlockBreakEvent) {}

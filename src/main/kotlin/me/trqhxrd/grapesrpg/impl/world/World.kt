@@ -19,7 +19,8 @@ class World(
     override val bukkitWorld: BukkitWorld,
     override val name: String,
     override val loadedChunks: MutableMap<ChunkID, ChunkAPI> = mutableMapOf(),
-    private val database: Database = Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite"),
+    private val database: Database =
+        Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite?foreign_keys=on"),
     private val dbLock: ReadWriteMutex = ReadWriteMutex(),
     override val loader: ChunkLoader = ChunkLoader(database, dbLock),
     override val saver: ChunkSaver = ChunkSaver(database, dbLock)
@@ -27,14 +28,6 @@ class World(
 
     init {
         worlds.add(this)
-
-        WorldScope.launch {
-            for (x in -10..10) {
-                for (z in -10..10) {
-                    this@World.loader.add(this@World.addChunk(ChunkID(x, z)))
-                }
-            }
-        }
     }
 
     companion object {
@@ -46,9 +39,8 @@ class World(
         fun getWorld(event: WorldEvent) = this.getWorld(event.world)
     }
 
-    override fun getChunk(id: ChunkID): ChunkAPI =
-        if (this.chunkExists(id)) this.loadedChunks[id]!!
-        else this.loadChunk(id)
+    override fun getChunk(id: ChunkID): ChunkAPI = if (this.chunkExists(id)) this.loadedChunks[id]!!
+    else this.loadChunk(id)
 
     override fun getChunk(loc: Location) = this.getChunk(ChunkID(loc))
 

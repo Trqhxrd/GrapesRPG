@@ -50,7 +50,7 @@ class ChunkLoader(
     override suspend fun commit() {
         val copy = this.chunkLock.withLock { return@withLock chunks.toMutableSet() }
         this.dbLock.read {
-            transaction {
+            transaction(this.database) {
                 for (chunk in copy) {
                     val table = chunk.table
                     if (table.exists()) {

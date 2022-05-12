@@ -47,13 +47,11 @@ class ChunkSaver(
         this.chunkLock.withLock {
             val copy = chunks.toMutableSet()
             this.dbLock.write {
-                transaction {
-                    println("transaction start")
+                transaction(this.database) {
                     for (chunk in copy) {
                         val table = chunk.table
                         SchemaUtils.create(table)
                         for (block in chunk.blocks.filter { it.value.blockData !is me.trqhxrd.grapesrpg.impl.world.blockdata.Void }) {
-                            println(block)
                             table.insert {
                                 it[table.id] = block.key.toJson()
                                 it[table.dataType] = block.value.blockData.id.toJson()
@@ -61,7 +59,6 @@ class ChunkSaver(
                             }
                         }
                     }
-                    println("transaction end")
                 }
                 delay(50)
             }

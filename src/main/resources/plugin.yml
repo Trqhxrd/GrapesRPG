@@ -20,7 +20,6 @@ libraries:
   - org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3
 
   - org.xerial:sqlite-jdbc:3.36.0.3
-  - com.zaxxer:HikariCP:5.0.1
   - org.slf4j:slf4j-nop:2.0.0-alpha7
 
   - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21

@@ -14,6 +14,6 @@ class ChunkLoadListener : AbstractListener(GrapesRPG.plugin) {
     @EventHandler
     fun onChunkLoad(e: ChunkLoadEvent) {
         if (!World.worlds.map { it.bukkitWorld.name }.contains(e.world.name)) World(e.world, e.world.name)
-        World.getWorld(e).loadChunk(ChunkID(e.chunk)).getBlock(Coordinate.DEFAULT).blockData = CraftingTable()
+        World.getWorld(e).loadChunk(ChunkID(e.chunk))
     }
 }
