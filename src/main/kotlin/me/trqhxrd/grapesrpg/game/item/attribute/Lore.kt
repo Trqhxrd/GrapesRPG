@@ -1,7 +1,7 @@
 package me.trqhxrd.grapesrpg.game.item.attribute
 
+import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import de.tr7zw.changeme.nbtapi.NBTItem
 import me.trqhxrd.grapesrpg.impl.item.attribute.Attribute
 import me.trqhxrd.grapesrpg.impl.item.lore.LoreEntry
@@ -16,7 +16,7 @@ class Lore(vararg var lines: String = arrayOf()) : Attribute("grapes", "lore") {
     override fun read(item: ItemStack) {
         val nbt = NBTItem(item)
         val linesSerialized = nbt.getCompound("grapes").getString("lore")
-        this.lines = Gson().fromJson(linesSerialized, object : TypeToken<List<String>>() {}.type)
+        this.lines = Gson().fromJson(linesSerialized, object : TypeToken<Array<String>>() {}.type)
     }
 
     override fun write(item: ItemStack): ItemStack {

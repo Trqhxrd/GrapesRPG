@@ -1,13 +1,23 @@
 package me.trqhxrd.grapesrpg
 
 import com.google.common.reflect.ClassPath
+import kotlinx.coroutines.*
 import me.trqhxrd.grapesrpg.api.item.Item
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.game.item.attribute.*
+import me.trqhxrd.grapesrpg.game.world.blockdata.CraftingTable
 import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
+import me.trqhxrd.grapesrpg.impl.world.World
+import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
+import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
+import me.trqhxrd.grapesrpg.impl.world.loading.WorldScope
 import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
 import me.trqhxrd.grapesrpg.listener.PlayerInteractListener
 import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
+import me.trqhxrd.grapesrpg.listener.block.BlockBreakListener
+import me.trqhxrd.grapesrpg.listener.block.BlockPlaceListener
+import me.trqhxrd.grapesrpg.listener.world.ChunkLoadListener
+import me.trqhxrd.grapesrpg.listener.world.ChunkUnloadListener
 import me.trqhxrd.menus.Menus
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils
 import org.bstats.bukkit.Metrics
@@ -84,8 +94,18 @@ object GrapesRPG {
         this.downloadDependencies()
         this.setupMetrics()
         this.setupAttributes()
+        this.setupBlockData()
         this.registerItems("me.trqhxrd.grapesrpg.game")
         this.setupListeners()
+    }
+
+    fun disable() {
+        World.worlds.forEach {
+            this.logger.info("Saving data of world ${it.name}.")
+            it.save()
+            it.loader.shutdownGracefully()
+            it.saver.shutdownGracefully()
+        }
     }
 
     /**
@@ -207,5 +227,14 @@ object GrapesRPG {
     private fun setupListeners() {
         EntityDamageByEntityListener()
         PlayerInteractListener()
+        ChunkLoadListener()
+        ChunkUnloadListener()
+        BlockPlaceListener()
+        BlockBreakListener()
+    }
+
+    private fun setupBlockData() {
+        BlockData.registry[Void.KEY] = Void::class.java
+        BlockData.registry[CraftingTable.KEY] = Void::class.java
     }
 }

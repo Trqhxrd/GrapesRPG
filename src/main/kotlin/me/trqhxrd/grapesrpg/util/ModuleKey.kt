@@ -31,5 +31,6 @@ data class ModuleKey(val module: String, val key: String) {
     /**
      * This field contains the key serialized in the format module:key.
      */
-    val serialized: String = "$module:$key"
+    // val serialized: String = "$module:$key"
+    fun toJson() = "$module:$key"
 }

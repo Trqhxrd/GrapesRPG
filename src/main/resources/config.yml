@@ -13,3 +13,7 @@ dependencies:
       artifactId: wolfyutils-spigot
       version: 4.16.1.0
       scope: compile
+jdbc:
+  block_max_length: 1024
+  commit_delay: 20 # How many chunks there are between two commits. More commits = more delay
+  threshold: 100

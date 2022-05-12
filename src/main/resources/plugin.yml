@@ -3,8 +3,9 @@ author: Trqhxrd
 website: github.com/Trqhxrd
 
 main: me.trqhxrd.grapesrpg.Main
-version: ${project.version}
+version: 1.0-SNAPSHOT
 api-version: 1.18
+load: STARTUP
 
 softdepend:
   - WolfyUtilities
@@ -17,4 +18,12 @@ libraries:
   - org.eclipse.aether:aether-transport-http:1.1.0
   - org.apache.maven:maven-aether-provider:3.3.9
   - org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3
+
+  - org.xerial:sqlite-jdbc:3.36.0.3
+  - com.zaxxer:HikariCP:5.0.1
+  - org.slf4j:slf4j-nop:2.0.0-alpha7
+
+  - org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21
+  - org.jetbrains.kotlin:kotlin-reflect:1.6.21
+
   - com.google.guava:guava:31.1-jre
