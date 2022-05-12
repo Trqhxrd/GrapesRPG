@@ -10,7 +10,6 @@ class BlockBreakListener : AbstractListener(GrapesRPG.plugin) {
 
     @EventHandler
     fun onBlockBreak(e: BlockBreakEvent) {
-        println(2)
-        World.getWorld(e.block.world).getBlock(e.block.location).data.onBreak(e)
+        World.getWorld(e.block.world).getBlock(e.block.location).blockData.onBreak(e)
     }
 }

@@ -8,7 +8,7 @@ interface Block {
     val chunk: Chunk
     val world: World
     val bukkitBlock: BukkitBlock
-    var data: BlockData<*>
+    var blockData: BlockData<*>
 
     fun location(): Coordinate
     fun inChunkLocation(): Coordinate

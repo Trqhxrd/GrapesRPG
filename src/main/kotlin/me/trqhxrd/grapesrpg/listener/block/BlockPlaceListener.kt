@@ -10,7 +10,6 @@ class BlockPlaceListener : AbstractListener(GrapesRPG.plugin) {
 
     @EventHandler
     fun onBlockPlace(e: BlockPlaceEvent) {
-        println(3)
-        World.getWorld(e.block.world).getBlock(e.block.location).data.onPlace(e)
+        World.getWorld(e.block.world).getBlock(e.block.location).blockData.onPlace(e)
     }
 }

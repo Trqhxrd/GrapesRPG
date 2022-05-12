@@ -1,7 +1,6 @@
 package me.trqhxrd.grapesrpg
 
 import com.google.common.reflect.ClassPath
-import kotlinx.coroutines.*
 import me.trqhxrd.grapesrpg.api.item.Item
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.game.item.attribute.*
@@ -10,7 +9,6 @@ import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
 import me.trqhxrd.grapesrpg.impl.world.World
 import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
 import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
-import me.trqhxrd.grapesrpg.impl.world.loading.WorldScope
 import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
 import me.trqhxrd.grapesrpg.listener.PlayerInteractListener
 import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
@@ -69,16 +67,6 @@ object GrapesRPG {
     val recipes = mutableListOf<Recipe>()
 
     /**
-     * Whether debug mode is enabled. When debug mode is enabled the plugin does stuff like giving out items on join.
-     */
-    var debugMode: Boolean = false
-        set(value) {
-            if (field) return
-            field = value
-            this.enableDebugMode()
-        }
-
-    /**
      * This method needs to be called for the API to initialize.
      */
     fun init(plugin: JavaPlugin) {
@@ -87,7 +75,6 @@ object GrapesRPG {
 
         this.plugin.config.options().copyDefaults(true)
         this.plugin.saveConfig()
-        this.debugMode = this.plugin.config.getBoolean("debug")
 
         Menus.enable(this.plugin)
 
@@ -103,8 +90,8 @@ object GrapesRPG {
         World.worlds.forEach {
             this.logger.info("Saving data of world ${it.name}.")
             it.save()
-            it.loader.shutdownGracefully()
             it.saver.shutdownGracefully()
+            it.loader.shutdownGracefully()
         }
     }
 
@@ -189,14 +176,6 @@ object GrapesRPG {
         this.logger.info("Collected all dependencies.")
     }
 
-    /**
-     * This method contains all things, that need to be executed when enabling debug mode.
-     */
-    private fun enableDebugMode() {
-        this.logger.warning("Debug-mode enabled! Restart server to disable")
-        PlayerJoinListener(this.plugin)
-    }
-
     private fun setupMetrics() {
         Metrics(this.plugin, 14961)
     }
@@ -222,11 +201,13 @@ object GrapesRPG {
         this.attributes.addAttribute(Todo())
         this.attributes.addAttribute(Material())
         this.attributes.addAttribute(Rarity())
+        this.attributes.addAttribute(Block())
     }
 
     private fun setupListeners() {
-        EntityDamageByEntityListener()
+        PlayerJoinListener()
         PlayerInteractListener()
+        EntityDamageByEntityListener()
         ChunkLoadListener()
         ChunkUnloadListener()
         BlockPlaceListener()

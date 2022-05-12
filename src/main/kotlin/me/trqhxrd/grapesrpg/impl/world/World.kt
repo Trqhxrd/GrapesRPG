@@ -19,8 +19,8 @@ class World(
     override val bukkitWorld: BukkitWorld,
     override val name: String,
     override val loadedChunks: MutableMap<ChunkID, ChunkAPI> = mutableMapOf(),
-    val database: Database = Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite"),
-    val dbLock: ReadWriteMutex = ReadWriteMutex(),
+    private val database: Database = Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite"),
+    private val dbLock: ReadWriteMutex = ReadWriteMutex(),
     override val loader: ChunkLoader = ChunkLoader(database, dbLock),
     override val saver: ChunkSaver = ChunkSaver(database, dbLock)
 ) : WorldAPI {

@@ -43,7 +43,6 @@ class ChunkLoader(
                     timeSinceLastCommit++
                     delay(DELAY)
                 }
-                if (!this.isActive) this@ChunkLoader.commit()
             }
         }
     }
@@ -62,14 +61,14 @@ class ChunkLoader(
                                 val klass = BlockData.registry[ModuleKey.deserialize(row[table.dataType])]!!
                                 val data = klass.getConstructor().newInstance()
                                 data.load(row[table.data])
-                                block.data = data
+                                block.blockData = data
                             }
                     }
                 }
             }
             delay(50)
         }
-        this.chunks.removeAll(copy)
+        this.chunkLock.withLock { this.chunks.removeAll(copy) }
     }
 
     override fun add(chunk: Chunk) {
@@ -82,6 +81,7 @@ class ChunkLoader(
 
     override fun shutdownGracefully() {
         runBlocking {
+            this@ChunkLoader.commit()
             job.cancelAndJoin()
         }
     }

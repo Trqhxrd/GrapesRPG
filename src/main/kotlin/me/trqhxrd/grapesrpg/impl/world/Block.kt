@@ -13,7 +13,7 @@ class Block(
     override val chunk: ChunkAPI,
     override val world: WorldAPI = chunk.world,
     override val bukkitBlock: Block = location.block(chunk.world.bukkitWorld),
-    override var data: BlockDataAPI<*> = Void()
+    override var blockData: BlockDataAPI<*> = Void()
 ) : BlockAPI {
 
     override fun location() = Coordinate(

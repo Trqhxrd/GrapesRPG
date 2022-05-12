@@ -8,7 +8,6 @@ import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkHandler
 import me.trqhxrd.grapesrpg.util.sync.ReadWriteMutex
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.exists
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -20,6 +19,7 @@ class ChunkSaver(
 ) : ChunkHandler {
 
     private var job: Job
+    private val savingJobs: MutableSet<Job> = mutableSetOf()
 
     companion object {
         const val MAX_TIME_SINCE_LAST_COMMIT = 60
@@ -38,27 +38,30 @@ class ChunkSaver(
                     timeSinceLastCommit++
                     delay(DELAY)
                 }
-                if (!this.isActive) this@ChunkSaver.commit()
             }
         }
     }
 
     override suspend fun commit() {
+        this.savingJobs.joinAll()
         this.chunkLock.withLock {
             val copy = chunks.toMutableSet()
             this.dbLock.write {
                 transaction {
+                    println("transaction start")
                     for (chunk in copy) {
                         val table = chunk.table
-                        if (!table.exists()) SchemaUtils.create(table)
-                        for (block in chunk.blocks.filter { it.value.data !is me.trqhxrd.grapesrpg.impl.world.blockdata.Void }) {
+                        SchemaUtils.create(table)
+                        for (block in chunk.blocks.filter { it.value.blockData !is me.trqhxrd.grapesrpg.impl.world.blockdata.Void }) {
+                            println(block)
                             table.insert {
                                 it[table.id] = block.key.toJson()
-                                it[table.dataType] = block.value.data.id.toJson()
-                                it[table.data] = block.value.data.save()
+                                it[table.dataType] = block.value.blockData.id.toJson()
+                                it[table.data] = block.value.blockData.save()
                             }
                         }
                     }
+                    println("transaction end")
                 }
                 delay(50)
             }
@@ -67,15 +70,17 @@ class ChunkSaver(
     }
 
     override fun add(chunk: Chunk) {
-        WorldScope.launch {
+        savingJobs.add(WorldScope.launch {
             this@ChunkSaver.chunkLock.withLock {
                 this@ChunkSaver.chunks.add(chunk)
             }
-        }
+        })
     }
 
     override fun shutdownGracefully() {
         runBlocking {
+            this@ChunkSaver.savingJobs.joinAll()
+            this@ChunkSaver.commit()
             job.cancelAndJoin()
         }
     }
