@@ -1,14 +1,11 @@
 package me.trqhxrd.grapesrpg.impl.world
 
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import me.trqhxrd.grapesrpg.impl.world.jdbc.ChunkTable
+import kotlinx.coroutines.runBlocking
+import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkTable
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import org.bukkit.Chunk
 import org.bukkit.Location
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import me.trqhxrd.grapesrpg.api.world.Block as BlockAPI
 import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
@@ -18,7 +15,7 @@ class Chunk(
     override val world: WorldAPI,
     override val bukkitChunk: Chunk,
     override val blocks: MutableMap<Coordinate, BlockAPI> = mutableMapOf(),
-    val table: ChunkTable = ChunkTable(id)
+    override val table: ChunkTable = ChunkTable(id)
 ) : ChunkAPI {
 
     override fun getBlock(id: Coordinate) = if (this.exists(id)) this.blocks[id]!! else this.addBlock(id)
@@ -41,18 +38,7 @@ class Chunk(
 
     override fun corner() = Coordinate(this.id.x * 16, 0, this.id.z * 16)
 
-    override fun save(){
-        println(this.id)
-        this.blocks.values.forEach { it.save() }
-    }
+    override fun save() = runBlocking { this@Chunk.world.saver.add(this@Chunk) }
 
-    override fun load() {
-        val chunk = ChunkTable(this.id)
-        transaction {
-            chunk.selectAll()
-                .map { it[chunk.id] }
-                .map { Block(Json.decodeFromString(it.value), this@Chunk) }
-                .forEach { it.load() }
-        }
-    }
+    override fun load() = runBlocking { this@Chunk.world.loader.add(this@Chunk) }
 }

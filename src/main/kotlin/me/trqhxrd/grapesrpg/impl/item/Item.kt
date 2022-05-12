@@ -99,7 +99,7 @@ open class Item(
     override fun applyAttributes(item: ItemStack): ItemStack {
         val ref = AtomicReference(item)
         val types = this.attributes.stream()
-            .map { a -> a.moduleKey.serialized() }
+            .map { a -> a.moduleKey.toJson() }
             .collect(Collectors.toSet())
         val nbt = NBTItem(item)
         nbt.addCompound("grapes")
@@ -127,14 +127,14 @@ open class Item(
         var item = ItemStack(this.type)
 
         val nbt = NBTItem(item)
-        nbt.addCompound("grapes").setString("id", this.key.serialized())
+        nbt.addCompound("grapes").setString("id", this.key.toJson())
         item = nbt.item
 
         item = this.applyAttributes(item)
 
         val meta = item.itemMeta
         val lore = meta!!.lore ?: mutableListOf()
-        lore.add("§8${this.key.serialized()}")
+        lore.add("§8${this.key.toJson()}")
         meta.lore = lore
         item.itemMeta = meta
 

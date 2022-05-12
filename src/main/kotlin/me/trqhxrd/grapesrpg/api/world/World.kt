@@ -1,5 +1,6 @@
 package me.trqhxrd.grapesrpg.api.world
 
+import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkHandler
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import org.bukkit.Location
@@ -9,6 +10,8 @@ interface World {
     val bukkitWorld: BukkitWorld
     val name: String
     val loadedChunks: MutableMap<ChunkID, Chunk>
+    val loader: ChunkHandler
+    val saver: ChunkHandler
 
     fun getChunk(id: ChunkID): Chunk
     fun getChunk(loc: Location): Chunk

@@ -12,7 +12,8 @@ interface BlockData<T : BlockData<T>> {
     fun onBreak(event: BlockBreakEvent)
     fun onPlace(event: BlockPlaceEvent)
 
+    fun apply(data: T)
+
     fun save(): String
     fun load(serialized: String)
-    fun apply(data: T)
 }

@@ -1,4 +1,4 @@
-package me.trqhxrd.grapesrpg.impl.world.jdbc
+package me.trqhxrd.grapesrpg.api.world.jdbc
 
 import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.util.coords.ChunkID

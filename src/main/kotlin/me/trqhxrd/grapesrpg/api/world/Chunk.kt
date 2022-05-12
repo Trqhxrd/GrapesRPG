@@ -1,5 +1,6 @@
 package me.trqhxrd.grapesrpg.api.world
 
+import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkTable
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import org.bukkit.Location
@@ -10,6 +11,7 @@ interface Chunk {
     val world: World
     val bukkitChunk: BukkitChunk
     val blocks: MutableMap<Coordinate, Block>
+    val table: ChunkTable
 
     fun getBlock(id: Coordinate): Block
     fun getBlock(loc: Location): Block

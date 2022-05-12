@@ -1,14 +1,15 @@
 package me.trqhxrd.grapesrpg.impl.world
 
-import me.trqhxrd.grapesrpg.impl.world.jdbc.ChunkTable
+import kotlinx.coroutines.launch
+import me.trqhxrd.grapesrpg.impl.world.loading.ChunkLoader
+import me.trqhxrd.grapesrpg.impl.world.loading.ChunkSaver
+import me.trqhxrd.grapesrpg.impl.world.loading.WorldScope
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
+import me.trqhxrd.grapesrpg.util.sync.ReadWriteMutex
 import org.bukkit.Location
 import org.bukkit.event.world.WorldEvent
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.exists
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
@@ -18,11 +19,22 @@ class World(
     override val bukkitWorld: BukkitWorld,
     override val name: String,
     override val loadedChunks: MutableMap<ChunkID, ChunkAPI> = mutableMapOf(),
-    val database: Database = Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite")
+    val database: Database = Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite"),
+    val dbLock: ReadWriteMutex = ReadWriteMutex(),
+    override val loader: ChunkLoader = ChunkLoader(database, dbLock),
+    override val saver: ChunkSaver = ChunkSaver(database, dbLock)
 ) : WorldAPI {
 
     init {
         worlds.add(this)
+
+        WorldScope.launch {
+            for (x in -10..10) {
+                for (z in -10..10) {
+                    this@World.loader.add(this@World.addChunk(ChunkID(x, z)))
+                }
+            }
+        }
     }
 
     companion object {
@@ -51,20 +63,9 @@ class World(
     override fun addChunk(loc: Location) = this.addChunk(ChunkID(loc))
 
     override fun loadChunk(id: ChunkID): ChunkAPI {
-        val chunk =  this.addChunk(id)
-        transaction {
-            val table = ChunkTable(id)
-            if (table.exists()) {
-                table.selectAll().forEach {
-                    val coords = Coordinate(it[table.id].value)
-                    val block = Block(coords, chunk)
-                    block.load()
-                    chunk.blocks[coords] = block
-                }
-            }
-        }
+        val chunk = this.addChunk(id)
+        this.loader.add(chunk)
 
-        this.loadedChunks[id] = chunk
         return chunk
     }
 
@@ -91,8 +92,5 @@ class World(
 
     override fun addBlock(loc: Location) = this.addBlock(Coordinate(loc))
 
-    override fun save() {
-        println(this.name)
-        this.loadedChunks.values.forEach { it.save() }
-    }
+    override fun save() = this.loadedChunks.values.forEach { this.saver.add(it) }
 }
