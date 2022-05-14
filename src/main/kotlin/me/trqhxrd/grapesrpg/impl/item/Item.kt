@@ -59,7 +59,7 @@ open class Item(
             val item = Item(key, itemStack.type)
 
             val attributeKeyStrings: MutableSet<String> =
-                Gson().fromJson(
+                GrapesRPG.gson.fromJson(
                     nbt.getString("attributes"),
                     object : TypeToken<MutableSet<String>>() {}.type
                 )

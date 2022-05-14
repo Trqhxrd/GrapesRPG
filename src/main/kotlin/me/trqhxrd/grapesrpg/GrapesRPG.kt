@@ -1,6 +1,8 @@
 package me.trqhxrd.grapesrpg
 
 import com.google.common.reflect.ClassPath
+import com.google.common.reflect.TypeToken
+import com.google.gson.GsonBuilder
 import me.trqhxrd.grapesrpg.api.item.Item
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.game.item.attribute.*
@@ -16,9 +18,14 @@ import me.trqhxrd.grapesrpg.listener.block.BlockBreakListener
 import me.trqhxrd.grapesrpg.listener.block.BlockPlaceListener
 import me.trqhxrd.grapesrpg.listener.world.ChunkLoadListener
 import me.trqhxrd.grapesrpg.listener.world.ChunkUnloadListener
+import me.trqhxrd.grapesrpg.util.AbstractListener
+import me.trqhxrd.grapesrpg.util.ModuleKey
+import me.trqhxrd.grapesrpg.util.serialization.BlockDataAdapter
+import me.trqhxrd.grapesrpg.util.serialization.ModuleKeyAdapter
 import me.trqhxrd.menus.Menus
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils
 import org.bstats.bukkit.Metrics
+import org.bukkit.event.HandlerList
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import org.eclipse.aether.RepositorySystem
@@ -66,6 +73,12 @@ object GrapesRPG {
 
     val recipes = mutableListOf<Recipe>()
 
+    val gson = GsonBuilder()
+        .serializeNulls()
+        .registerTypeAdapter(ModuleKey::class.java, ModuleKeyAdapter())
+        .registerTypeAdapter(object : TypeToken<BlockData<*>>() {}.type, BlockDataAdapter())
+        .create()
+
     /**
      * This method needs to be called for the API to initialize.
      */
@@ -93,6 +106,7 @@ object GrapesRPG {
             it.saver.shutdownGracefully()
             it.loader.shutdownGracefully()
         }
+        AbstractListener.unregisterAll()
     }
 
     /**
@@ -212,10 +226,12 @@ object GrapesRPG {
         ChunkUnloadListener()
         BlockPlaceListener()
         BlockBreakListener()
+
+        println(HandlerList.getRegisteredListeners(this.plugin).map { it.listener::class.qualifiedName })
     }
 
     private fun setupBlockData() {
-        BlockData.registry[Void.KEY] = Void::class.java
-        BlockData.registry[CraftingTable.KEY] = Void::class.java
+        BlockData.register(Void.KEY, Void::class.java)
+        BlockData.register(CraftingTable.KEY, CraftingTable::class.java)
     }
 }

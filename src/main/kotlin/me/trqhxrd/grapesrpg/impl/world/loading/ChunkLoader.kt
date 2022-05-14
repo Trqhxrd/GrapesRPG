@@ -1,14 +1,14 @@
 package me.trqhxrd.grapesrpg.impl.world.loading
 
-import com.google.gson.Gson
+import com.google.common.reflect.TypeToken
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.api.world.Chunk
 import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkHandler
 import me.trqhxrd.grapesrpg.impl.world.Block
 import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
-import me.trqhxrd.grapesrpg.util.ModuleKey
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import me.trqhxrd.grapesrpg.util.sync.ReadWriteMutex
 import org.jetbrains.exposed.sql.Database
@@ -55,13 +55,18 @@ class ChunkLoader(
                     val table = chunk.table
                     if (table.exists()) {
                         table.selectAll().map { it[table.id] }
-                            .map { Block(Gson().fromJson(it.value, Coordinate::class.java), chunk) }
+                            .map { Block(GrapesRPG.gson.fromJson(it.value, Coordinate::class.java), chunk) }
                             .forEach { block ->
-                                val row = table.select { table.id.eq(block.location.toJson()) }.first()
-                                val klass = BlockData.registry[ModuleKey.deserialize(row[table.dataType])]!!
-                                val data = klass.getConstructor().newInstance()
-                                data.load(row[table.data])
-                                block.blockData = data
+                                /*
+                                 val row = table.select { table.id eq block.location.toJson() }.first()
+                                 val klass = BlockData.registry[ModuleKey.deserialize(row[table.dataType])]!!
+                                 val data = klass.getConstructor().newInstance()
+                                 data.load(row[table.data])
+                                 block.blockData = data
+                                */
+
+                                val row = table.select { table.id eq block.location.toJson() }.first()
+                                block.blockData = GrapesRPG.gson.fromJson(row[table.data], object : TypeToken<BlockData<*>>() {}.type)
                             }
                     }
                 }

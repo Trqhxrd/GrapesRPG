@@ -1,6 +1,6 @@
 package me.trqhxrd.grapesrpg.util.coords
 
-import com.google.gson.Gson
+import me.trqhxrd.grapesrpg.GrapesRPG
 import org.bukkit.Location
 import org.bukkit.World
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
@@ -26,7 +26,7 @@ data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparabl
 
     fun block(world: World) = this.toLocation(world).block
 
-    fun toJson(): String = Gson().toJson(this)
+    fun toJson(): String = GrapesRPG.gson.toJson(this)
 
     override fun clone() = Coordinate(this)
 

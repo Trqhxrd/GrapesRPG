@@ -1,5 +1,6 @@
 package me.trqhxrd.grapesrpg.api.world
 
+import com.google.gson.JsonElement
 import me.trqhxrd.grapesrpg.util.ModuleKey
 import org.bukkit.Material
 import org.bukkit.event.block.BlockBreakEvent
@@ -10,12 +11,10 @@ interface BlockData<T : BlockData<T>> {
     val id: ModuleKey
     val type: Material
 
-    fun onClick(event: PlayerInteractEvent)
-    fun onBreak(event: BlockBreakEvent)
-    fun onPlace(event: BlockPlaceEvent)
+    fun onClick(event: PlayerInteractEvent): Boolean
+    fun onBreak(event: BlockBreakEvent): Boolean
+    fun onPlace(event: BlockPlaceEvent): Boolean
 
-    fun apply(data: T)
-
-    fun save(): String
-    fun load(serialized: String)
+    fun serializeData(): JsonElement
+    fun deserializeData(data: JsonElement)
 }
