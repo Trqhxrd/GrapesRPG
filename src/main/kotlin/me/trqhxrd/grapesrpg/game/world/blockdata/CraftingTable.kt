@@ -26,11 +26,6 @@ class CraftingTable : BlockData<CraftingTable>(KEY, Material.CRAFTING_TABLE) {
 
     override fun onBreak(event: BlockBreakEvent) = false
 
-    override fun onPlace(event: BlockPlaceEvent): Boolean {
-        println("ez gg")
-        return false
-    }
-
     override fun serializeData() = JsonObject()
 
     override fun deserializeData(data: JsonElement) {}

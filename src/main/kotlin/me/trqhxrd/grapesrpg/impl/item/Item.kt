@@ -1,6 +1,5 @@
 package me.trqhxrd.grapesrpg.impl.item
 
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.tr7zw.changeme.nbtapi.NBTItem
 import me.trqhxrd.grapesrpg.GrapesRPG
@@ -49,8 +48,11 @@ open class Item(
 
     companion object {
         fun isGrapesItem(itemStack: ItemStack): Boolean {
-            val nbt = NBTItem(itemStack).addCompound("grapes")
-            return ModuleKey.deserializeOrNull(nbt.getString("id")) != null
+            return if (itemStack.type == Material.AIR) false
+            else {
+                val nbt = NBTItem(itemStack).addCompound("grapes")
+                ModuleKey.deserializeOrNull(nbt.getString("id")) != null
+            }
         }
 
         fun fromItemStack(itemStack: ItemStack): Item {

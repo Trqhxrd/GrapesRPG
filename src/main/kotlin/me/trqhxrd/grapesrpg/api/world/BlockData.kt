@@ -13,7 +13,6 @@ interface BlockData<T : BlockData<T>> {
 
     fun onClick(event: PlayerInteractEvent): Boolean
     fun onBreak(event: BlockBreakEvent): Boolean
-    fun onPlace(event: BlockPlaceEvent): Boolean
 
     fun serializeData(): JsonElement
     fun deserializeData(data: JsonElement)

@@ -57,14 +57,6 @@ class ChunkLoader(
                         table.selectAll().map { it[table.id] }
                             .map { Block(GrapesRPG.gson.fromJson(it.value, Coordinate::class.java), chunk) }
                             .forEach { block ->
-                                /*
-                                 val row = table.select { table.id eq block.location.toJson() }.first()
-                                 val klass = BlockData.registry[ModuleKey.deserialize(row[table.dataType])]!!
-                                 val data = klass.getConstructor().newInstance()
-                                 data.load(row[table.data])
-                                 block.blockData = data
-                                */
-
                                 val row = table.select { table.id eq block.location.toJson() }.first()
                                 block.blockData = GrapesRPG.gson.fromJson(row[table.data], object : TypeToken<BlockData<*>>() {}.type)
                             }

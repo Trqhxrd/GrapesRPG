@@ -28,8 +28,6 @@ interface World {
 
     fun getBlock(id: Coordinate): Block
     fun getBlock(loc: Location): Block
-    fun addBlock(id: Coordinate): Block
-    fun addBlock(loc: Location): Block
 
     fun save()
 }

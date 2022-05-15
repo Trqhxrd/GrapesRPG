@@ -9,19 +9,19 @@ import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
 import org.bukkit.inventory.ItemStack
 import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData as BlockDataImpl
 
-class Block(var data: BlockData<*>) : Attribute("grapes", "block") {
+class Block(var blockData: BlockData<*>) : Attribute("grapes", "block") {
 
     constructor() : this(Void())
 
     override fun read(item: ItemStack) {
         val nbt = NBTItem(item)
         val d = nbt.getCompound("grapes").getString("blockData")
-        this.data = GrapesRPG.gson.fromJson(d, object : TypeToken<BlockDataImpl<*>>() {}.type)
+        this.blockData = GrapesRPG.gson.fromJson(d, object : TypeToken<BlockDataImpl<*>>() {}.type)
     }
 
     override fun write(item: ItemStack): ItemStack {
         val nbt = NBTItem(item)
-        nbt.getCompound("grapes").setString("blockData", GrapesRPG.gson.toJson(this.data))
+        nbt.getCompound("grapes").setString("blockData", GrapesRPG.gson.toJson(this.blockData))
         return nbt.item
     }
 }

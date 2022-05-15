@@ -1,9 +1,7 @@
 package me.trqhxrd.grapesrpg.impl.world
 
-import kotlinx.coroutines.launch
 import me.trqhxrd.grapesrpg.impl.world.loading.ChunkLoader
 import me.trqhxrd.grapesrpg.impl.world.loading.ChunkSaver
-import me.trqhxrd.grapesrpg.impl.world.loading.WorldScope
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import me.trqhxrd.grapesrpg.util.sync.ReadWriteMutex
@@ -15,7 +13,7 @@ import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
 import org.bukkit.World as BukkitWorld
 
-class World(
+data class World(
     override val bukkitWorld: BukkitWorld,
     override val name: String,
     override val loadedChunks: MutableMap<ChunkID, ChunkAPI> = mutableMapOf(),
@@ -76,13 +74,9 @@ class World(
 
     override fun chunkExists(loc: Location) = this.chunkExists(ChunkID(loc))
 
-    override fun getBlock(id: Coordinate) = this.getChunk(id.toChunkID()).getBlock(id.toChunkCoords())
+    override fun getBlock(id: Coordinate) = this.getChunk(id.toChunkID()).getBlock(id.inChunkCoords())
 
     override fun getBlock(loc: Location) = this.getBlock(Coordinate(loc))
-
-    override fun addBlock(id: Coordinate) = this.getChunk(id.toChunkID()).addBlock(id.toChunkCoords())
-
-    override fun addBlock(loc: Location) = this.addBlock(Coordinate(loc))
 
     override fun save() = this.loadedChunks.values.forEach { this.saver.add(it) }
 }

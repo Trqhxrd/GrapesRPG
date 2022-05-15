@@ -4,9 +4,11 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import me.trqhxrd.grapesrpg.GrapesRPG
+import me.trqhxrd.grapesrpg.api.world.Block
 import me.trqhxrd.grapesrpg.api.world.Chunk
 import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkHandler
 import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
+import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import me.trqhxrd.grapesrpg.util.sync.ReadWriteMutex
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -24,21 +26,21 @@ class ChunkSaver(
     private val savingJobs: MutableSet<Job> = mutableSetOf()
 
     companion object {
-        const val MAX_TIME_SINCE_LAST_COMMIT = 60
-        const val DELAY = 1000L
-        const val THRESHOLD = 10
+        var max_delay = 60L
+        var delay = 5L
+        var threashold = 10L
     }
 
     init {
         var timeSinceLastCommit = 0
         job = WorldScope.launch {
             while (this.isActive) {
-                if (timeSinceLastCommit > MAX_TIME_SINCE_LAST_COMMIT || this@ChunkSaver.chunks.size > THRESHOLD) {
+                if (timeSinceLastCommit > max_delay || this@ChunkSaver.chunks.size > threashold) {
                     this@ChunkSaver.commit()
                     timeSinceLastCommit = 0
                 } else {
                     timeSinceLastCommit++
-                    delay(DELAY)
+                    delay(delay)
                 }
             }
         }
@@ -47,23 +49,28 @@ class ChunkSaver(
     override suspend fun commit() {
         this.savingJobs.joinAll()
         this.chunkLock.withLock {
-            val copy = chunks.toMutableSet().filter { it.blocks.isNotEmpty() }
+            val copy = chunks.toMutableSet().filter { it.lock.withLock { return@filter it.blocks.isNotEmpty() } }
             for (chunk in copy) {
-                val it = chunk.blocks.iterator()
-                while (it.hasNext()) {
-                    val next = it.next()
+                val blockCopy: MutableMap<Coordinate, Block>
+                chunk.lock.withLock {
+                    blockCopy = chunk.blocks.toMutableMap()
+                }
+                for (next in blockCopy)
                     if (next.value.blockData is Void)
                         chunk.blocks.remove(next.key)
-                }
             }
             this.dbLock.write {
                 transaction(this.database) {
                     for (chunk in copy) {
                         val table = chunk.table
-                        SchemaUtils.create(table)
+                        var b = false
                         for (block in chunk.blocks.filter { it.value.blockData !is Void }) {
+                            if (!b) {
+                                SchemaUtils.create(table)
+                                b = true
+                            }
                             table.insert {
-                                it[table.id] = block.key.toJson()
+                                it[table.id] = block.key.inChunkCoords().toJson()
                                 it[table.dataType] = block.value.blockData.id.toJson()
                                 it[table.data] = GrapesRPG.gson.toJson(block.value.blockData)
                             }

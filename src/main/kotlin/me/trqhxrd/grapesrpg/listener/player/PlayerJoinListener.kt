@@ -1,4 +1,4 @@
-package me.trqhxrd.grapesrpg.listener
+package me.trqhxrd.grapesrpg.listener.player
 
 import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.game.item.DebugBlock

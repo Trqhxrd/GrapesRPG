@@ -16,7 +16,6 @@ class Void : BlockData<Void>(KEY, Material.AIR) {
 
     override fun onClick(event: PlayerInteractEvent) = false
     override fun onBreak(event: BlockBreakEvent) = false
-    override fun onPlace(event: BlockPlaceEvent) = false
 
     override fun serializeData() = JsonObject()
 

@@ -21,10 +21,16 @@ data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparabl
 
     fun toVector() = this.toLocation().toVector()
 
-    fun toChunkID() = ChunkID((this.x - this.x % 16) / 16, (this.z - this.z % 16) / 16)
-    fun toChunkCoords() = Coordinate(this.x % 16, this.y, this.z % 16)
-
     fun block(world: World) = this.toLocation(world).block
+
+    fun toChunkID() = ChunkID(this.x / 16, this.z / 16)
+    fun inChunkCoords(): Coordinate {
+        var x = this.x % 16
+        var z = this.z % 16
+        if (x < 0) x += 16
+        if (z < 0) z += 16
+        return Coordinate(x, this.y, z)
+    }
 
     fun toJson(): String = GrapesRPG.gson.toJson(this)
 

@@ -11,11 +11,12 @@ import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
 import me.trqhxrd.grapesrpg.impl.world.World
 import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
 import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
-import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
-import me.trqhxrd.grapesrpg.listener.PlayerInteractListener
-import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
+import me.trqhxrd.grapesrpg.impl.world.loading.ChunkSaver
 import me.trqhxrd.grapesrpg.listener.block.BlockBreakListener
 import me.trqhxrd.grapesrpg.listener.block.BlockPlaceListener
+import me.trqhxrd.grapesrpg.listener.entity.EntityDamageByEntityListener
+import me.trqhxrd.grapesrpg.listener.player.PlayerInteractListener
+import me.trqhxrd.grapesrpg.listener.player.PlayerJoinListener
 import me.trqhxrd.grapesrpg.listener.world.ChunkLoadListener
 import me.trqhxrd.grapesrpg.listener.world.ChunkUnloadListener
 import me.trqhxrd.grapesrpg.util.AbstractListener
@@ -25,7 +26,6 @@ import me.trqhxrd.grapesrpg.util.serialization.ModuleKeyAdapter
 import me.trqhxrd.menus.Menus
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils
 import org.bstats.bukkit.Metrics
-import org.bukkit.event.HandlerList
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import org.eclipse.aether.RepositorySystem
@@ -113,6 +113,8 @@ object GrapesRPG {
      * This function downloads and installs dependencies listed in the "dependencies" section in the config.
      */
     private fun downloadDependencies() {
+        if (this.plugin.config.getConfigurationSection("dependencies.repositories") == null) return
+        if (this.plugin.config.getConfigurationSection("dependencies.artifacts") == null) return
         this.logger.info("Downloading dependencies... This may take some time.")
         this.logger.info("Setting up repository structure.")
         val locator = MavenRepositorySystemUtils.newServiceLocator()
@@ -226,11 +228,13 @@ object GrapesRPG {
         ChunkUnloadListener()
         BlockPlaceListener()
         BlockBreakListener()
-
-        println(HandlerList.getRegisteredListeners(this.plugin).map { it.listener::class.qualifiedName })
     }
 
     private fun setupBlockData() {
+        ChunkSaver.delay = this.plugin.config.getLong("jdbc.commit_delay")
+        ChunkSaver.max_delay = this.plugin.config.getLong("jdbc.max_delay")
+        ChunkSaver.threashold = this.plugin.config.getLong("jdbc.threshold")
+
         BlockData.register(Void.KEY, Void::class.java)
         BlockData.register(CraftingTable.KEY, CraftingTable::class.java)
     }
