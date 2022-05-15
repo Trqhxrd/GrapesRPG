@@ -233,7 +233,7 @@ object GrapesRPG {
     private fun setupBlockData() {
         ChunkSaver.delay = this.plugin.config.getLong("jdbc.commit_delay")
         ChunkSaver.max_delay = this.plugin.config.getLong("jdbc.max_delay")
-        ChunkSaver.threashold = this.plugin.config.getLong("jdbc.threshold")
+        ChunkSaver.threshold = this.plugin.config.getLong("jdbc.threshold")
 
         BlockData.register(Void.KEY, Void::class.java)
         BlockData.register(CraftingTable.KEY, CraftingTable::class.java)
