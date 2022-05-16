@@ -13,7 +13,7 @@ import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
 class Chunk(
     override val id: ChunkID,
     override val world: WorldAPI,
-    override val bukkitChunk: Chunk,
+    override val bukkitChunk: Chunk =  id.bukkitChunk(world.bukkitWorld),
     override val blocks: MutableMap<Coordinate, BlockAPI> = ConcurrentHashMap(),
     override val table: ChunkTable = ChunkTable(id),
 ) : ChunkAPI {

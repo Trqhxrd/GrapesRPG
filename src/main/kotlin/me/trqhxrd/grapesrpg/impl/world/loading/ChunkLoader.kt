@@ -27,22 +27,14 @@ class ChunkLoader(
     private var job: Job
 
     companion object {
-        const val MAX_TIME_SINCE_LAST_COMMIT = 50
         const val DELAY = 100L
-        const val THRESHOLD = 10
     }
 
     init {
-        var timeSinceLastCommit = 0
         job = WorldScope.launch {
             while (this.isActive) {
-                if (timeSinceLastCommit > MAX_TIME_SINCE_LAST_COMMIT || this@ChunkLoader.chunks.size > THRESHOLD) {
-                    this@ChunkLoader.commit()
-                    timeSinceLastCommit = 0
-                } else {
-                    timeSinceLastCommit++
-                    delay(DELAY)
-                }
+                this@ChunkLoader.commit()
+                delay(DELAY)
             }
         }
     }
@@ -58,7 +50,11 @@ class ChunkLoader(
                             .map { Block(GrapesRPG.gson.fromJson(it.value, Coordinate::class.java), chunk) }
                             .forEach { block ->
                                 val row = table.select { table.id eq block.location.toJson() }.first()
-                                block.blockData = GrapesRPG.gson.fromJson(row[table.data], object : TypeToken<BlockData<*>>() {}.type)
+                                println(row)
+                                block.blockData = GrapesRPG.gson.fromJson(row[table.data],
+                                    object : TypeToken<BlockData<*>>() {}.type
+                                )
+                                println(block.location)
                             }
                     }
                 }

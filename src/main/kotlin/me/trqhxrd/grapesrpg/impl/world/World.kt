@@ -27,6 +27,14 @@ data class World(
 
     init {
         worlds.add(this)
+
+        for (x in -10..10) {
+            for (z in -10..10) {
+                val chunk = Chunk(ChunkID(x, z), this)
+                this.loadedChunks[chunk.id] = chunk
+                this.loader.add(chunk)
+            }
+        }
     }
 
     companion object {
@@ -38,14 +46,15 @@ data class World(
         fun getWorld(event: WorldEvent) = this.getWorld(event.world)
     }
 
-    override fun getChunk(id: ChunkID): ChunkAPI = if (this.chunkExists(id)) this.loadedChunks[id]!!
-    else this.loadChunk(id)
+    override fun getChunk(id: ChunkID): ChunkAPI =
+        if (this.chunkExists(id)) this.loadedChunks[id]!!
+        else this.loadChunk(id)
 
     override fun getChunk(loc: Location) = this.getChunk(ChunkID(loc))
 
     override fun addChunk(id: ChunkID): ChunkAPI {
         return if (!this.chunkExists(id)) {
-            val chunk = Chunk(id, this, id.bukkitChunk(this.bukkitWorld))
+            val chunk = Chunk(id, this)
             this.loadedChunks[id] = chunk
             chunk
         } else this.loadedChunks[id]!!
