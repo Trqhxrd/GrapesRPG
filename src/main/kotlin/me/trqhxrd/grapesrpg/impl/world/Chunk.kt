@@ -1,13 +1,11 @@
 package me.trqhxrd.grapesrpg.impl.world
 
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkTable
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
 import org.bukkit.Chunk
 import org.bukkit.Location
+import java.util.concurrent.ConcurrentHashMap
 import me.trqhxrd.grapesrpg.api.world.Block as BlockAPI
 import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
@@ -16,18 +14,13 @@ class Chunk(
     override val id: ChunkID,
     override val world: WorldAPI,
     override val bukkitChunk: Chunk,
-    override val blocks: MutableMap<Coordinate, BlockAPI> = mutableMapOf(),
+    override val blocks: MutableMap<Coordinate, BlockAPI> = ConcurrentHashMap(),
     override val table: ChunkTable = ChunkTable(id),
-    override val lock: Mutex = Mutex()
 ) : ChunkAPI {
 
     override fun getBlock(id: Coordinate): BlockAPI {
-        return runBlocking {
-            return@runBlocking this@Chunk.lock.withLock {
-                return@withLock if (this@Chunk.exists(id)) this@Chunk.blocks[id]!!
-                else this@Chunk.addBlock(id)
-            }
-        }
+        return if (this@Chunk.exists(id)) this@Chunk.blocks[id]!!
+        else this@Chunk.addBlock(id)
     }
 
     override fun getBlock(loc: Location) = this.getBlock(Coordinate(loc))

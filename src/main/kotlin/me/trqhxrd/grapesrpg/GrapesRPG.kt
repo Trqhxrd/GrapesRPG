@@ -2,6 +2,7 @@ package me.trqhxrd.grapesrpg
 
 import com.google.common.reflect.ClassPath
 import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import me.trqhxrd.grapesrpg.api.item.Item
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
@@ -73,7 +74,7 @@ object GrapesRPG {
 
     val recipes = mutableListOf<Recipe>()
 
-    val gson = GsonBuilder()
+    val gson: Gson = GsonBuilder()
         .serializeNulls()
         .registerTypeAdapter(ModuleKey::class.java, ModuleKeyAdapter())
         .registerTypeAdapter(object : TypeToken<BlockData<*>>() {}.type, BlockDataAdapter())

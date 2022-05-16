@@ -13,7 +13,6 @@ interface Chunk {
     val bukkitChunk: BukkitChunk
     val blocks: MutableMap<Coordinate, Block>
     val table: ChunkTable
-    val lock: Mutex
 
     fun getBlock(id: Coordinate): Block
     fun getBlock(loc: Location): Block

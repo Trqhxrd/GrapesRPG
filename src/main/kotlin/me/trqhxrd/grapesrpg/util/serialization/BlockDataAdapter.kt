@@ -18,8 +18,8 @@ class BlockDataAdapter : JsonSerializer<BlockData<*>>, JsonDeserializer<BlockDat
 
     override fun deserialize(data: JsonElement?, type: Type?, context: JsonDeserializationContext?): BlockData<*> {
         if (data == null) throw NullPointerException("Can't parse null data!")
-        val key = GrapesRPG.gson.fromJson(data.asJsonObject["id"], ModuleKey::class.java)
-        val klass = BlockData.registry[key]!!
+        val id = GrapesRPG.gson.fromJson(data.asJsonObject["id"], ModuleKey::class.java)
+        val klass = BlockData.registry[id]!!
         val obj = klass.getConstructor().newInstance()
 
         val dataJson: JsonElement = data.asJsonObject["data"] ?: return obj

@@ -9,6 +9,7 @@ import org.bukkit.Location
 import org.bukkit.event.world.WorldEvent
 import org.jetbrains.exposed.sql.Database
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
 import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
 import org.bukkit.World as BukkitWorld
@@ -16,7 +17,7 @@ import org.bukkit.World as BukkitWorld
 data class World(
     override val bukkitWorld: BukkitWorld,
     override val name: String,
-    override val loadedChunks: MutableMap<ChunkID, ChunkAPI> = mutableMapOf(),
+    override val loadedChunks: MutableMap<ChunkID, ChunkAPI> = ConcurrentHashMap(),
     private val database: Database =
         Database.connect("jdbc:sqlite://${bukkitWorld.worldFolder.absolutePath}/grapes.sqlite?foreign_keys=on"),
     private val dbLock: ReadWriteMutex = ReadWriteMutex(),
