@@ -47,8 +47,8 @@ open class Item(
     )
 
     companion object {
-        fun isGrapesItem(itemStack: ItemStack): Boolean {
-            return if (itemStack.type == Material.AIR) false
+        fun isGrapesItem(itemStack: ItemStack?): Boolean {
+            return if (itemStack == null || itemStack.type == Material.AIR) false
             else {
                 val nbt = NBTItem(itemStack).addCompound("grapes")
                 ModuleKey.deserializeOrNull(nbt.getString("id")) != null

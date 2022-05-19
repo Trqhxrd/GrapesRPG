@@ -2,7 +2,7 @@ package me.trqhxrd.grapesrpg.util.serialization
 
 import com.google.gson.*
 import me.trqhxrd.grapesrpg.GrapesRPG
-import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
+import me.trqhxrd.grapesrpg.impl.world.BlockData
 import me.trqhxrd.grapesrpg.util.ModuleKey
 import java.lang.reflect.Type
 
@@ -11,7 +11,7 @@ class BlockDataAdapter : JsonSerializer<BlockData<*>>, JsonDeserializer<BlockDat
         if (data == null) throw NullPointerException("Can't parse null data!")
         val obj = JsonObject()
         obj.add("id", GrapesRPG.gson.toJsonTree(data.id))
-        obj.add("data", data.serializeData())
+        obj.add("data", data.save())
         return obj
     }
 
@@ -23,7 +23,7 @@ class BlockDataAdapter : JsonSerializer<BlockData<*>>, JsonDeserializer<BlockDat
         val obj = klass.getConstructor().newInstance()
 
         val dataJson: JsonElement = data.asJsonObject["data"] ?: return obj
-        obj.deserializeData(dataJson)
+        obj.load(dataJson)
         return obj
     }
 }

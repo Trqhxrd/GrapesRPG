@@ -11,7 +11,7 @@ class DebugBlock : Item(
     "block",
     Material.CRAFTING_TABLE,
     mutableSetOf(
-        Block(CraftingTable()),
+        Block(CraftingTable(), Material.CRAFTING_TABLE),
         Name("ez gg"),
         Rarity(Rarity.Value.RARE)
     )

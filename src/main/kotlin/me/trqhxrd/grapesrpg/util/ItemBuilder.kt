@@ -19,10 +19,6 @@ class ItemBuilder {
         stack = ItemStack(mat!!)
     }
 
-    constructor(mat: Material?, sh: Short) {
-        stack = ItemStack(mat!!, 1, sh)
-    }
-
     val itemMeta: ItemMeta?
         get() = stack.itemMeta
 
@@ -53,13 +49,6 @@ class ItemBuilder {
         return this
     }
 
-    fun setBannerColor(color: DyeColor?): ItemBuilder {
-        val meta = stack.itemMeta as BannerMeta?
-        meta!!.baseColor = color
-        setItemMeta(meta)
-        return this
-    }
-
     fun setAmount(amount: Int): ItemBuilder {
         stack.amount = amount
         return this
@@ -67,13 +56,6 @@ class ItemBuilder {
 
     fun setItemMeta(meta: ItemMeta?): ItemBuilder {
         stack.itemMeta = meta
-        return this
-    }
-
-    fun setHead(owner: String?): ItemBuilder {
-        val meta = stack.itemMeta as SkullMeta?
-        meta!!.owner = owner
-        setItemMeta(meta)
         return this
     }
 

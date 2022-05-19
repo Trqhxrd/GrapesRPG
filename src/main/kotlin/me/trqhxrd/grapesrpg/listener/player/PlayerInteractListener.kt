@@ -5,10 +5,13 @@ import me.trqhxrd.grapesrpg.game.item.attribute.Block
 import me.trqhxrd.grapesrpg.impl.item.Item
 import me.trqhxrd.grapesrpg.impl.world.World
 import me.trqhxrd.grapesrpg.util.AbstractListener
+import me.trqhxrd.grapesrpg.util.coords.Coordinate
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
+import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
@@ -22,24 +25,33 @@ class PlayerInteractListener : AbstractListener(GrapesRPG.plugin) {
             e.isCancelled = true
             return
         }
-        val block = World.getWorld(e.clickedBlock!!.world).getBlock(e.clickedBlock!!.location)
 
-        val b = block.blockData.onClick(e)
-        e.isCancelled = b
+        val b = e.clickedBlock!!
+        val world = World.getWorld(b.world)
+        var block = world.getBlock(Coordinate(b))
+        if (block.blockData.onClick(e)) return
 
-        val loc =
-            if (Tag.REPLACEABLE_PLANTS.isTagged(e.clickedBlock!!.type)) e.clickedBlock!!.location
-            else e.clickedBlock!!.getRelative(e.blockFace).location
+        if (Item.isGrapesItem(e.item)) {
+            e.isCancelled = true
+            val item = Item.fromItemStack(e.item!!)
+            val attr = item.getAttribute(Block::class)
 
-        val target = World.getWorld(e.clickedBlock!!.world).getBlock(loc)
+            if (attr != null && e.action == Action.RIGHT_CLICK_BLOCK && e.clickedBlock != null) {
+                val bukkitBlock =
+                    if (Tag.REPLACEABLE_PLANTS.isTagged(e.clickedBlock!!.type)) e.clickedBlock!!
+                    else e.clickedBlock!!.getRelative(e.blockFace)
 
-        if (!b) {
-            val item = e.item ?: ItemStack(Material.AIR)
-            val i = if (Item.isGrapesItem(item)) Item.fromItemStack(item) else return
-            val attr = i.getAttribute(Block::class) ?: return
+                block = world.getBlock(Coordinate(bukkitBlock))
 
-            target.blockData = attr.blockData
+                bukkitBlock.type = attr.type
+                block.blockData = attr.blockData
+
+                if (attr.reduce && e.player.gameMode != GameMode.CREATIVE) {
+                    val i = e.item!!
+                    if (i.amount > 1) i.amount--
+                    else e.player.inventory.setItem(e.hand!!, ItemStack(Material.AIR))
+                }
+            }
         }
-
     }
 }

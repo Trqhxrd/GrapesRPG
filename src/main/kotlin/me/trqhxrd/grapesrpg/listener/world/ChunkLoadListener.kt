@@ -1,7 +1,6 @@
 package me.trqhxrd.grapesrpg.listener.world
 
 import me.trqhxrd.grapesrpg.GrapesRPG
-import me.trqhxrd.grapesrpg.game.world.blockdata.CraftingTable
 import me.trqhxrd.grapesrpg.impl.world.World
 import me.trqhxrd.grapesrpg.util.AbstractListener
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
@@ -13,7 +12,7 @@ class ChunkLoadListener : AbstractListener(GrapesRPG.plugin) {
 
     @EventHandler
     fun onChunkLoad(e: ChunkLoadEvent) {
-        if (!World.worlds.map { it.bukkitWorld.name }.contains(e.world.name)) World(e.world, e.world.name)
-        World.getWorld(e).loadChunk(ChunkID(e.chunk))
+        if (!World.containsWorld(e)) World(e.world.name,e.world)
+        World.getWorld(e).loadChunkAsync(ChunkID(e.chunk))
     }
 }

@@ -3,13 +3,16 @@ package me.trqhxrd.grapesrpg.util.coords
 import me.trqhxrd.grapesrpg.GrapesRPG
 import org.bukkit.Location
 import org.bukkit.World
-import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
+import org.bukkit.block.Block
+import kotlin.math.floor
 
 data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparable<Coordinate> {
 
     constructor() : this(0, 0, 0)
     constructor(loc: Location) : this(loc.blockX, loc.blockY, loc.blockZ)
     constructor(coords: Coordinate) : this(coords.x, coords.y, coords.z)
+    constructor(id: ChunkID, offset: Coordinate) : this(id.x * 16 + offset.x, offset.y, id.z * 16 + offset.z)
+    constructor(block: Block) : this(block.x, block.y, block.z)
 
     companion object {
         val DEFAULT = Coordinate(0, 0, 0)
@@ -17,13 +20,18 @@ data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparabl
 
     fun toLocation(world: World?) = Location(world, this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
     fun toLocation() = this.toLocation(null)
-    fun toLocation(world: WorldAPI) = this.toLocation(world.bukkitWorld)
 
     fun toVector() = this.toLocation().toVector()
 
     fun block(world: World) = this.toLocation(world).block
 
-    fun toChunkID() = ChunkID(this.x / 16, this.z / 16)
+    fun toChunkID(): ChunkID {
+        val x = floor(this.x / 16.0).toInt()
+        val z = floor(this.z / 16.0).toInt()
+
+        return ChunkID(x, z)
+    }
+
     fun inChunkCoords(): Coordinate {
         var x = this.x % 16
         var z = this.z % 16

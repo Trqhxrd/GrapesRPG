@@ -1,48 +1,70 @@
 package me.trqhxrd.grapesrpg.impl.world
 
-import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkTable
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import me.trqhxrd.grapesrpg.api.world.World
+import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
+import me.trqhxrd.grapesrpg.impl.world.jdbc.ChunkTable
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
-import org.bukkit.Chunk
-import org.bukkit.Location
-import java.util.concurrent.ConcurrentHashMap
 import me.trqhxrd.grapesrpg.api.world.Block as BlockAPI
 import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
-import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
 
-class Chunk(
-    override val id: ChunkID,
-    override val world: WorldAPI,
-    override val bukkitChunk: Chunk =  id.bukkitChunk(world.bukkitWorld),
-    override val blocks: MutableMap<Coordinate, BlockAPI> = ConcurrentHashMap(),
-    override val table: ChunkTable = ChunkTable(id),
-) : ChunkAPI {
+class Chunk(override val id: ChunkID, override val world: World) : ChunkAPI {
 
-    override fun getBlock(id: Coordinate): BlockAPI {
-        return if (this@Chunk.exists(id)) this@Chunk.blocks[id]!!
-        else this@Chunk.addBlock(id)
+    val table = ChunkTable(id)
+    private val lock = Mutex()
+    private val blocks: MutableMap<Coordinate, BlockAPI> = mutableMapOf()
+
+    override fun getBlockRelative(location: Coordinate): BlockAPI {
+        return runBlocking {
+            this@Chunk.lock.withLock {
+                return@runBlocking this@Chunk.blocks[location]!!
+            }
+        }
     }
 
-    override fun getBlock(loc: Location) = this.getBlock(Coordinate(loc))
-
-    private fun addBlock(id: Coordinate): BlockAPI {
-        return if (!this.exists(id)) {
-            val block = Block(id, this, this.world, id.block(this.world.bukkitWorld))
-            this@Chunk.blocks[id] = block
-            block
-        } else this.getBlock(id)
+    override fun getBlock(location: Coordinate): BlockAPI {
+        var block: BlockAPI?
+        val chunkID = location.toChunkID()
+        if (chunkID != this.id) throw IllegalArgumentException("Can only request block from within chunk!")
+        val offset = location.inChunkCoords()
+        runBlocking {
+            this@Chunk.lock.withLock {
+                block = this@Chunk.blocks[offset]
+                println("getting block   $block")
+                println("blockmap   $blocks")
+            }
+        }
+        if (block == null) {
+            block = this@Chunk.addBlock(offset)
+        }
+        return block!!
     }
 
-    private fun addBlock(loc: Location) = this.addBlock(Coordinate(loc))
+    override fun getBlocks(): Map<Coordinate, BlockAPI> {
+        return runBlocking {
+            this@Chunk.lock.withLock {
+                val map = this@Chunk.blocks.toMap()
+                println("In map   ${this@Chunk.blocks}")
+                println("getBlocks   $map")
+                return@runBlocking map
+            }
+        }
+    }
 
-    override fun exists(id: Coordinate) = this.blocks.containsKey(id.inChunkCoords())
-
-
-    override fun exists(loc: Location) = this.exists(Coordinate(loc))
-
-    override fun corner() = Coordinate(this.id.x * 16, 0, this.id.z * 16)
-
-    override fun save() = this.world.saver.add(this)
-
-    override fun load() = this.world.loader.add(this)
+    private fun addBlock(coords: Coordinate): BlockAPI {
+        val block: BlockAPI
+        runBlocking {
+            this@Chunk.lock.withLock {
+                println("adding block")
+                block = if (this@Chunk.blocks.containsKey(coords.inChunkCoords())) this@Chunk.getBlockRelative(coords.inChunkCoords())
+                else Block(Coordinate(this@Chunk.id, coords), this@Chunk, Void())
+                this@Chunk.blocks[coords] = block
+                println("addBlock map   $blocks")
+            }
+        }
+        return block
+    }
 }

@@ -9,10 +9,8 @@ import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.game.item.attribute.*
 import me.trqhxrd.grapesrpg.game.world.blockdata.CraftingTable
 import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
+import me.trqhxrd.grapesrpg.impl.world.BlockData
 import me.trqhxrd.grapesrpg.impl.world.World
-import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
-import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
-import me.trqhxrd.grapesrpg.impl.world.loading.ChunkSaver
 import me.trqhxrd.grapesrpg.listener.block.BlockBreakListener
 import me.trqhxrd.grapesrpg.listener.block.BlockPlaceListener
 import me.trqhxrd.grapesrpg.listener.entity.EntityDamageByEntityListener
@@ -101,13 +99,9 @@ object GrapesRPG {
     }
 
     fun disable() {
-        World.worlds.forEach {
-            this.logger.info("Saving data of world ${it.name}.")
-            it.save()
-            it.saver.shutdownGracefully()
-            it.loader.shutdownGracefully()
-        }
         AbstractListener.unregisterAll()
+
+        World.saveAll()
     }
 
     /**
@@ -232,11 +226,6 @@ object GrapesRPG {
     }
 
     private fun setupBlockData() {
-        ChunkSaver.delay = this.plugin.config.getLong("jdbc.commit_delay")
-        ChunkSaver.max_delay = this.plugin.config.getLong("jdbc.max_delay")
-        ChunkSaver.threshold = this.plugin.config.getLong("jdbc.threshold")
-
-        BlockData.register(Void.KEY, Void::class.java)
         BlockData.register(CraftingTable.KEY, CraftingTable::class.java)
     }
 }
