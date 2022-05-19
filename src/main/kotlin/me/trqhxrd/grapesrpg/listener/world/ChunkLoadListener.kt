@@ -13,6 +13,6 @@ class ChunkLoadListener : AbstractListener(GrapesRPG.plugin) {
     @EventHandler
     fun onChunkLoad(e: ChunkLoadEvent) {
         if (!World.containsWorld(e)) World(e.world.name,e.world)
-        World.getWorld(e).loadChunkAsync(ChunkID(e.chunk))
+        World.getWorld(e).loadChunk(ChunkID(e.chunk))
     }
 }

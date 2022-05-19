@@ -101,7 +101,8 @@ object GrapesRPG {
     fun disable() {
         AbstractListener.unregisterAll()
 
-        World.saveAll()
+        this.logger.info("Saving worlds...")
+        World.disable()
     }
 
     /**

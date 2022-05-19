@@ -11,7 +11,12 @@ data class Coordinate(val x: Int, val y: Int, val z: Int) : Cloneable, Comparabl
     constructor() : this(0, 0, 0)
     constructor(loc: Location) : this(loc.blockX, loc.blockY, loc.blockZ)
     constructor(coords: Coordinate) : this(coords.x, coords.y, coords.z)
-    constructor(id: ChunkID, offset: Coordinate) : this(id.x * 16 + offset.x, offset.y, id.z * 16 + offset.z)
+    constructor(id: ChunkID, offset: Coordinate) : this(
+        id.x * 16 + offset.inChunkCoords().x,
+        offset.inChunkCoords().y,
+        id.z * 16 + offset.inChunkCoords().z
+    )
+
     constructor(block: Block) : this(block.x, block.y, block.z)
 
     companion object {
