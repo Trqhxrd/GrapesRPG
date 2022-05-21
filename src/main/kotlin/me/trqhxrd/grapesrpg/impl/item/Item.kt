@@ -1,6 +1,5 @@
 package me.trqhxrd.grapesrpg.impl.item
 
-import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import de.tr7zw.changeme.nbtapi.NBTItem
 import me.trqhxrd.grapesrpg.GrapesRPG
@@ -48,9 +47,12 @@ open class Item(
     )
 
     companion object {
-        fun isGrapesItem(itemStack: ItemStack): Boolean {
-            val nbt = NBTItem(itemStack).addCompound("grapes")
-            return ModuleKey.deserializeOrNull(nbt.getString("id")) != null
+        fun isGrapesItem(itemStack: ItemStack?): Boolean {
+            return if (itemStack == null || itemStack.type == Material.AIR) false
+            else {
+                val nbt = NBTItem(itemStack).addCompound("grapes")
+                ModuleKey.deserializeOrNull(nbt.getString("id")) != null
+            }
         }
 
         fun fromItemStack(itemStack: ItemStack): Item {
@@ -59,7 +61,7 @@ open class Item(
             val item = Item(key, itemStack.type)
 
             val attributeKeyStrings: MutableSet<String> =
-                Gson().fromJson(
+                GrapesRPG.gson.fromJson(
                     nbt.getString("attributes"),
                     object : TypeToken<MutableSet<String>>() {}.type
                 )

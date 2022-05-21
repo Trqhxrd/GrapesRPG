@@ -1,23 +1,27 @@
 package me.trqhxrd.grapesrpg
 
 import com.google.common.reflect.ClassPath
-import kotlinx.coroutines.*
+import com.google.common.reflect.TypeToken
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import me.trqhxrd.grapesrpg.api.item.Item
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.game.item.attribute.*
 import me.trqhxrd.grapesrpg.game.world.blockdata.CraftingTable
 import me.trqhxrd.grapesrpg.impl.item.attribute.AttributeRegistry
+import me.trqhxrd.grapesrpg.impl.world.BlockData
 import me.trqhxrd.grapesrpg.impl.world.World
-import me.trqhxrd.grapesrpg.impl.world.blockdata.BlockData
-import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
-import me.trqhxrd.grapesrpg.impl.world.loading.WorldScope
-import me.trqhxrd.grapesrpg.listener.EntityDamageByEntityListener
-import me.trqhxrd.grapesrpg.listener.PlayerInteractListener
-import me.trqhxrd.grapesrpg.listener.PlayerJoinListener
 import me.trqhxrd.grapesrpg.listener.block.BlockBreakListener
 import me.trqhxrd.grapesrpg.listener.block.BlockPlaceListener
+import me.trqhxrd.grapesrpg.listener.entity.EntityDamageByEntityListener
+import me.trqhxrd.grapesrpg.listener.player.PlayerInteractListener
+import me.trqhxrd.grapesrpg.listener.player.PlayerJoinListener
 import me.trqhxrd.grapesrpg.listener.world.ChunkLoadListener
 import me.trqhxrd.grapesrpg.listener.world.ChunkUnloadListener
+import me.trqhxrd.grapesrpg.util.AbstractListener
+import me.trqhxrd.grapesrpg.util.ModuleKey
+import me.trqhxrd.grapesrpg.util.serialization.BlockDataAdapter
+import me.trqhxrd.grapesrpg.util.serialization.ModuleKeyAdapter
 import me.trqhxrd.menus.Menus
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils
 import org.bstats.bukkit.Metrics
@@ -68,15 +72,11 @@ object GrapesRPG {
 
     val recipes = mutableListOf<Recipe>()
 
-    /**
-     * Whether debug mode is enabled. When debug mode is enabled the plugin does stuff like giving out items on join.
-     */
-    var debugMode: Boolean = false
-        set(value) {
-            if (field) return
-            field = value
-            this.enableDebugMode()
-        }
+    val gson: Gson = GsonBuilder()
+        .serializeNulls()
+        .registerTypeAdapter(ModuleKey::class.java, ModuleKeyAdapter())
+        .registerTypeAdapter(object : TypeToken<BlockData<*>>() {}.type, BlockDataAdapter())
+        .create()
 
     /**
      * This method needs to be called for the API to initialize.
@@ -87,7 +87,6 @@ object GrapesRPG {
 
         this.plugin.config.options().copyDefaults(true)
         this.plugin.saveConfig()
-        this.debugMode = this.plugin.config.getBoolean("debug")
 
         Menus.enable(this.plugin)
 
@@ -100,18 +99,18 @@ object GrapesRPG {
     }
 
     fun disable() {
-        World.worlds.forEach {
-            this.logger.info("Saving data of world ${it.name}.")
-            it.save()
-            it.loader.shutdownGracefully()
-            it.saver.shutdownGracefully()
-        }
+        AbstractListener.unregisterAll()
+
+        this.logger.info("Saving worlds...")
+        World.disable()
     }
 
     /**
      * This function downloads and installs dependencies listed in the "dependencies" section in the config.
      */
     private fun downloadDependencies() {
+        if (this.plugin.config.getConfigurationSection("dependencies.repositories") == null) return
+        if (this.plugin.config.getConfigurationSection("dependencies.artifacts") == null) return
         this.logger.info("Downloading dependencies... This may take some time.")
         this.logger.info("Setting up repository structure.")
         val locator = MavenRepositorySystemUtils.newServiceLocator()
@@ -189,14 +188,6 @@ object GrapesRPG {
         this.logger.info("Collected all dependencies.")
     }
 
-    /**
-     * This method contains all things, that need to be executed when enabling debug mode.
-     */
-    private fun enableDebugMode() {
-        this.logger.warning("Debug-mode enabled! Restart server to disable")
-        PlayerJoinListener(this.plugin)
-    }
-
     private fun setupMetrics() {
         Metrics(this.plugin, 14961)
     }
@@ -222,11 +213,13 @@ object GrapesRPG {
         this.attributes.addAttribute(Todo())
         this.attributes.addAttribute(Material())
         this.attributes.addAttribute(Rarity())
+        this.attributes.addAttribute(Block())
     }
 
     private fun setupListeners() {
-        EntityDamageByEntityListener()
+        PlayerJoinListener()
         PlayerInteractListener()
+        EntityDamageByEntityListener()
         ChunkLoadListener()
         ChunkUnloadListener()
         BlockPlaceListener()
@@ -234,7 +227,6 @@ object GrapesRPG {
     }
 
     private fun setupBlockData() {
-        BlockData.registry[Void.KEY] = Void::class.java
-        BlockData.registry[CraftingTable.KEY] = Void::class.java
+        BlockData.register(CraftingTable.KEY, CraftingTable::class.java)
     }
 }

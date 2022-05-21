@@ -1,4 +1,4 @@
-package me.trqhxrd.grapesrpg.listener
+package me.trqhxrd.grapesrpg.listener.entity
 
 import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.game.item.attribute.Damaging
@@ -18,7 +18,7 @@ class EntityDamageByEntityListener : AbstractListener(GrapesRPG.plugin) {
         val damagerEquipment = damager.equipment
         if (damager.equipment == null) return
         val weaponIs = damagerEquipment?.itemInMainHand ?: return
-        if (weaponIs.type == Material.AIR) return
+        if (!Item.isGrapesItem(weaponIs)) return
         val weapon = Item.fromItemStack(weaponIs)
         val attr = weapon.getAttribute(Damaging::class)
         if (attr != null) event.damage = attr.damage.toDouble()

@@ -26,8 +26,8 @@ abstract class AbstractListener(val plugin: Plugin, register: Boolean = true) : 
          * This method unregisters all listeners.
          */
         fun unregisterAll() = listeners.keys.stream()
-            .filter { l -> listeners[l] == true }
-            .forEach { l -> l.unregister() }
+            .filter { listeners[it]==true }
+            .forEach { it.unregister() }
     }
 
     /**

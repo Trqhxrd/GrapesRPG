@@ -3,8 +3,8 @@ package me.trqhxrd.grapesrpg.gui.crafting
 import me.trqhxrd.grapesrpg.GrapesRPG
 import me.trqhxrd.grapesrpg.api.recipe.Recipe
 import me.trqhxrd.grapesrpg.api.recipe.crafting.CraftingRecipe
+import me.trqhxrd.grapesrpg.util.ItemBuilder
 import me.trqhxrd.menus.implementation.AbstractMenu
-import me.wolfyscript.utilities.util.inventory.item_builder.ItemBuilder
 import org.bukkit.Material.AIR
 import org.bukkit.Material.GRAY_STAINED_GLASS_PANE
 import org.bukkit.entity.LivingEntity
@@ -29,7 +29,7 @@ class CraftingGUI() : AbstractMenu(SIZE, TITLE) {
         const val SIZE = 5 * 9
         val INPUT_SLOTS = arrayOf(10, 11, 12, 19, 20, 21, 28, 29, 30)
         const val OUTPUT_SLOT = 24
-        val BACKGROUND: ItemStack = ItemBuilder(GRAY_STAINED_GLASS_PANE).setDisplayName("§c").create()
+        val BACKGROUND: ItemStack = ItemBuilder(GRAY_STAINED_GLASS_PANE).setDisplayName("§c").build()
     }
 
     override fun setup() {

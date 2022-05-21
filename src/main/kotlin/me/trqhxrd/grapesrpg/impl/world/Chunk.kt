@@ -1,44 +1,83 @@
 package me.trqhxrd.grapesrpg.impl.world
 
+import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
-import me.trqhxrd.grapesrpg.api.world.jdbc.ChunkTable
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import me.trqhxrd.grapesrpg.api.world.World
+import me.trqhxrd.grapesrpg.impl.world.blockdata.Void
 import me.trqhxrd.grapesrpg.util.coords.ChunkID
 import me.trqhxrd.grapesrpg.util.coords.Coordinate
-import org.bukkit.Chunk
-import org.bukkit.Location
 import me.trqhxrd.grapesrpg.api.world.Block as BlockAPI
 import me.trqhxrd.grapesrpg.api.world.Chunk as ChunkAPI
-import me.trqhxrd.grapesrpg.api.world.World as WorldAPI
 
 class Chunk(
     override val id: ChunkID,
-    override val world: WorldAPI,
-    override val bukkitChunk: Chunk,
-    override val blocks: MutableMap<Coordinate, BlockAPI> = mutableMapOf(),
-    override val table: ChunkTable = ChunkTable(id)
+    override val world: World,
 ) : ChunkAPI {
 
-    override fun getBlock(id: Coordinate) = if (this.exists(id)) this.blocks[id]!! else this.addBlock(id)
+    private val lock = Mutex()
+    private val blocks: MutableMap<Coordinate, BlockAPI> = mutableMapOf()
 
-    override fun getBlock(loc: Location) = this.getBlock(Coordinate(loc))
-
-    override fun addBlock(id: Coordinate): BlockAPI {
-        return if (!this.exists(id)) {
-            val b = Block(id, this, this.world, id.block(this.world.bukkitWorld))
-            this.blocks[id] = b
-            b
-        } else this.getBlock(id)
+    override fun getBlockRelative(coords: Coordinate): BlockAPI {
+        return runBlocking {
+            return@runBlocking this@Chunk.getBlockRelativeAsync(coords).await()
+        }
     }
 
-    override fun addBlock(loc: Location) = this.addBlock(Coordinate(loc))
+    override suspend fun getBlockRelativeAsync(coords: Coordinate) = WorldScope.async {
+        this@Chunk.lock.withLock(this@Chunk) {
+            return@async this@Chunk.getBlockRelativeUnsafe(coords)
+        }
+    }
 
-    override fun exists(id: Coordinate) = this.blocks.containsKey(id.toChunkCoords())
+    private fun getBlockRelativeUnsafe(coords: Coordinate): BlockAPI {
+        return if (this@Chunk.blocks.containsKey(coords)) this@Chunk.blocks[coords]!!
+        else this@Chunk.addBlockUnsafe(coords)
+    }
 
-    override fun exists(loc: Location) = this.exists(Coordinate(loc))
+    override fun getBlock(coords: Coordinate) = runBlocking {
+        return@runBlocking this@Chunk.getBlockAsync(coords).await()
+    }
 
-    override fun corner() = Coordinate(this.id.x * 16, 0, this.id.z * 16)
+    override suspend fun getBlockAsync(coords: Coordinate) = WorldScope.async {
+        this@Chunk.lock.withLock {
+            return@async this@Chunk.getBlockUnsafe(coords)
+        }
+    }
 
-    override fun save() = runBlocking { this@Chunk.world.saver.add(this@Chunk) }
+    private fun getBlockUnsafe(coords: Coordinate): BlockAPI {
+        val chunkID = coords.toChunkID()
+        if (chunkID != this.id) throw IllegalArgumentException("Can only request block from within chunk!")
+        val offset = coords.inChunkCoords()
+        var block = this@Chunk.blocks[offset]
+        if (block == null) block = this@Chunk.addBlockUnsafe(offset)
 
-    override fun load() = runBlocking { this@Chunk.world.loader.add(this@Chunk) }
+        return block
+    }
+
+    override fun getBlocks(): Map<Coordinate, BlockAPI> {
+        return runBlocking {
+            this@Chunk.getBlocksAsync().await()
+        }
+    }
+
+    override suspend fun getBlocksAsync() = WorldScope.async {
+        this@Chunk.lock.withLock(this@Chunk) {
+            return@async this@Chunk.getBlocksUnsafe()
+        }
+    }
+
+    private fun getBlocksUnsafe() = this.blocks.toMap()
+
+    private fun addBlockUnsafe(coords: Coordinate): BlockAPI {
+        return if (this@Chunk.containsBlockUnsafe(coords)) this@Chunk.getBlockUnsafe(coords)
+        else {
+            val block = Block(Coordinate(this@Chunk.id, coords), this@Chunk, Void())
+            this@Chunk.blocks[coords.inChunkCoords()] = block
+            block
+        }
+    }
+
+    private fun containsBlockUnsafe(coords: Coordinate) = this.blocks.containsKey(coords)
 }
